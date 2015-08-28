@@ -1,0 +1,10 @@
+# Naming convention
+ClassName: PascalCase 
+ConstAllCap: True
+ConstName: SnakeCase
+FunctionName: PascalCase
+VariableName: CamelCase
+
+# Style
+Indentation: 4
+OpenBracketOnSameLine: False
