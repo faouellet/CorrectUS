@@ -1,28 +1,24 @@
-from clang.cindex import *
-import re
-import yaml as Y
+import argparse
+import os
+from subprocess import call
 
-Config.set_library_file("/usr/lib/llvm-3.6/lib/libclang.so.1")
+import pdb
 
-index = Index.create()
-translation_unit = index.parse("inputs/test.cpp");
-cursor = translation_unit.cursor
+def main():
+    parser = argparse.ArgumentParser(description="CorrectUS arguments parser")
+    parser.add_argument('dir', help="Top level directory containing the assignments to grade", action='store')
 
-naming_matchers = {}
-naming_matchers["CamelCase"] = re.compile("[a-z]+([A-Z][a-z])*")
-naming_matchers["PascalCase"] = re.compile("([A-Z][a-z])+")
-naming_matchers["SnakeCase"] = re.compile("[A-Z][a-z]+_[A-Z][a-z]+(_[A-Z][a-z]+)+")
+    args = parser.parse_args()
+    directory = args.dir
 
-with open("usherb.style") as style_file:
-    rules = Y.safe_load(style_file)
+    if os.path.isdir(directory):
+        for f in os.listdir(directory):
+            extension = os.path.splitext(f)[1][1:]
+            if extension in ["cpp", "h"]:
+                call(["clang-tidy", directory + f, "--"])
+    else:
+        print "Not a valid directory path"
 
-rulesdb = {}
+if __name__ == '__main__':
+    main()
 
-for (x, y) in rules.items():
-    try:
-        rulesdb[x] = int(y, 10)
-    except:
-        rulesdb[x] = y
-
-for node in cursor.walk_preorder():
-    print node.spelling
