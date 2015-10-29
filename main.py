@@ -6,15 +6,26 @@ import yaml
 
 import pdb
 
+type_to_clang_check = { 
+        'IfAssign' : 'clang-diagnostic-parentheses', 
+        'SwitchBool' : 'clang-diagnostic-switch-bool'
+        }
+
+class Error:
+    def __init__(self, type, cost):
+        self.type = type
+        self.cost = cost
+        self.check = type_to_clang_check[self.type]
+
 def parse_config(config):
-    error_cost = {}
+    errors = []
     conf = open(config)
     data = yaml.safe_load(conf)
     conf.close()
     for d in data:
-        error_cost[d['error']['type']] = d['error']['cost']
+        errors.append(Error(d['error']['type'], d['error']['cost']))
 
-    return error_cost
+    return errors
 
 def init_parser():
     parser = argparse.ArgumentParser(description="CorrectUS options:")
@@ -27,6 +38,14 @@ def init_parser():
 
     return parser
 
+def format_command(config):
+    command = "clang-tidy -checks=-*,"
+    checks = [x.check for x in config]
+    command = command + ','.join(checks)
+
+    print command
+    return command
+
 def main():
     parser = init_parser()
     args = parser.parse_args()
@@ -35,7 +54,7 @@ def main():
     marking_scheme = parse_config(args.config)
     print marking_scheme
 
-    command = "clang-tidy -checks=-*,clang-analyzer-* {0} --"
+    command = format_command(marking_scheme)
 
     if os.path.isdir(directory):
         for f in os.listdir(directory):
