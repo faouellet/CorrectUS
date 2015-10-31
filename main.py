@@ -60,12 +60,14 @@ def grade(student_dir, marking_scheme):
                     infos = line.split(':')
                     clang_msg = infos[4]
                     clang_msg = clang_msg[clang_msg.rfind('['):]
-                    if clang_msg in marking_scheme:
-                        print "Mistake:{0}".format(infos[4].replace(clang_msg, ''))
-                        print "File: {0}, Line {1}, Column {2}".format(os.path.basename(infos[0]), infos[1], infos[2])
-                        print "Penalty: {0}".format(marking_scheme[clang_msg])
-                        print ""
-                        total_penalty += marking_scheme[clang_msg]
+                    # By default, there's a 2 point penalty for a warning
+                    penalty = marking_scheme[clang_msg] if clang_msg in marking_scheme else 2
+
+                    print "Mistake:{0}".format(infos[4].replace(clang_msg, ''))
+                    print "File: {0}, Line {1}, Column {2}".format(os.path.basename(infos[0]), infos[1], infos[2])
+                    print "Penalty: {0}\n".format(penalty)
+                    total_penalty += penalty
+    print "Total penalty: {0}\n".format(total_penalty)
 
 def main():
     parser = init_parser()
