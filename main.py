@@ -15,7 +15,7 @@ class Error:
     def __init__(self, type, cost):
         self.type = type
         self.cost = cost
-        self.check = type_to_clang_check[self.type]
+        self.message = '[' + type_to_clang_check[self.type] + ']'
 
 def parse_config(config):
     errors = []
@@ -38,23 +38,16 @@ def init_parser():
 
     return parser
 
-def format_command(config):
-    command = "clang-tidy -checks=-*,"
-    checks = [x.check for x in config]
-    command = command + ','.join(checks)
-
-    print command
-    return command
-
 def main():
     parser = init_parser()
     args = parser.parse_args()
     directory = args.dir
 
     marking_scheme = parse_config(args.config)
-    print marking_scheme
 
-    command = format_command(marking_scheme)
+    command = "clang-tidy {0} --"
+
+    total_penalty = 0
 
     if os.path.isdir(directory):
         for f in os.listdir(directory):
@@ -66,9 +59,13 @@ def main():
                 for line in osplit:
                     if "warning:" in line:
                         infos = line.split(':')
-                        print "Mistake:{0}".format(re.sub("\[[a-zA-Z\.\-]+\]",'', infos[4]))
-                        print "File: {0}, Line {1}, Column {2}".format(os.path.basename(infos[0]), infos[1], infos[2])
-                        print ""
+                        found_error = next((x for x in marking_scheme if x.message in line), None)
+                        if found_error is not None:
+                            print "Mistake:{0}".format(re.sub("\[[a-zA-Z\.\-]+\]",'', infos[4]))
+                            print "File: {0}, Line {1}, Column {2}".format(os.path.basename(infos[0]), infos[1], infos[2])
+                            print "Penalty: {0}".format(found_error.cost)
+                            print ""
+                            total_penalty += found_error.cost
     else:
         print "Not a valid directory path"
 
