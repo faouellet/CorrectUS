@@ -6,6 +6,8 @@ import yaml
 
 import pdb
 
+command = "clang-tidy {0} --"
+
 type_to_clang_check = { 
         'IfAssign' : 'clang-diagnostic-parentheses', 
         'SwitchBool' : 'clang-diagnostic-switch-bool'
@@ -18,6 +20,11 @@ class Error:
         self.message = '[' + type_to_clang_check[self.type] + ']'
 
 def parse_config(config):
+    """Parses the marking scheme file.
+
+    :param config: Configuration file containing the mistakes the grader will be looking for and the penalties associated with them.
+                   Note that this file is in the YAML format.
+    """
     errors = []
     conf = open(config)
     data = yaml.safe_load(conf)
@@ -28,6 +35,8 @@ def parse_config(config):
     return errors
 
 def init_parser():
+    """Initializes the CorrectUS arguement parser.
+    """
     parser = argparse.ArgumentParser(description="CorrectUS options:")
     parser.add_argument('-dir=', dest='dir', metavar='directory', 
                         help="""Specifies the top level directory containing the assignments to grade. 
@@ -38,6 +47,32 @@ def init_parser():
 
     return parser
 
+def grade(student_dir, marking_scheme):
+    """Grades a student homework based on a marking scheme. 
+    This will generate a report to inform the student of the mistakes he made and the penalty associated with each mistake.
+
+    :param student_dir: Directory containint the student homework
+    :param marking_scheme: Mistakes and the penalties associated with them that the grader will be looking for.
+    """
+    total_penalty = 0
+    for f in os.listdir(directory):
+        extension = os.path.splitext(f)[1][1:]
+        if extension in ["cpp", "h"]:
+            p = subprocess.Popen(command.format(directory + f).split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output = p.communicate()[0]
+            osplit = output.split('\n')
+            for line in osplit:
+                if "warning:" in line:
+                    infos = line.split(':')
+                    found_error = next((x for x in marking_scheme if x.message in line), None)
+                    if found_error is not None:
+                        print "Mistake:{0}".format(re.sub("\[[a-zA-Z\.\-]+\]",'', infos[4]))
+                        print "File: {0}, Line {1}, Column {2}".format(os.path.basename(infos[0]), infos[1], infos[2])
+                        print "Penalty: {0}".format(found_error.cost)
+                        print ""
+                        total_penalty += found_error.cost
+
+
 def main():
     parser = init_parser()
     args = parser.parse_args()
@@ -45,27 +80,10 @@ def main():
 
     marking_scheme = parse_config(args.config)
 
-    command = "clang-tidy {0} --"
-
-    total_penalty = 0
-
     if os.path.isdir(directory):
-        for f in os.listdir(directory):
-            extension = os.path.splitext(f)[1][1:]
-            if extension in ["cpp", "h"]:
-                p = subprocess.Popen(command.format(directory + f).split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                output = p.communicate()[0]
-                osplit = output.split('\n')
-                for line in osplit:
-                    if "warning:" in line:
-                        infos = line.split(':')
-                        found_error = next((x for x in marking_scheme if x.message in line), None)
-                        if found_error is not None:
-                            print "Mistake:{0}".format(re.sub("\[[a-zA-Z\.\-]+\]",'', infos[4]))
-                            print "File: {0}, Line {1}, Column {2}".format(os.path.basename(infos[0]), infos[1], infos[2])
-                            print "Penalty: {0}".format(found_error.cost)
-                            print ""
-                            total_penalty += found_error.cost
+        for student_dir in directory:
+            if os.path.isdir(student_dir):
+                grade(student_dir, marking_scheme)
     else:
         print "Not a valid directory path"
 
