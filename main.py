@@ -3,9 +3,7 @@ import os
 import subprocess
 import yaml
 
-import pdb
-
-command = "clang-tidy {0} --"
+command = "clang-tidy {0} -- -Weverything"
 
 type_to_clang_check = { 
         'IfAssign' : 'clang-diagnostic-parentheses', 
@@ -53,6 +51,7 @@ def grade(student_dir, marking_scheme):
         extension = os.path.splitext(f)[1][1:]
         if extension in ["cpp", "h"]:
             p = subprocess.Popen(command.format(student_dir + f).split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # TODO: use subprocess.check_output().decode instead
             output = p.communicate()[0]
             osplit = output.split('\n')
             for line in osplit:
