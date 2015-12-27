@@ -1,6 +1,5 @@
 import os
 import subprocess
-import yaml
 
 class GradingEngine:
     def __init__(self):

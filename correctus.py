@@ -2,6 +2,7 @@ from Tkinter import Tk, BOTH, W, E, N, S, NS, EW, END, Menu, VERTICAL, HORIZONTA
 from ttk import Frame, Button, Style, Label, Entry, Treeview, Scrollbar
 from tkFileDialog import askdirectory, askopenfilename, asksaveasfilename
 import tkFont
+import yaml
 
 from gradingengine import *
 from errors import *
@@ -11,7 +12,7 @@ class CorrectUSFrame(Frame):
         Frame.__init__(self, parent)
         self.parent = parent
         self.initUI()
-        self.initMenu()
+        self.initMenus()
         self.initTreeview()
         self.centerWindow()
         self.ge = GradingEngine()
@@ -21,17 +22,16 @@ class CorrectUSFrame(Frame):
 
         self.pack(fill=BOTH, expand=True)
 
-        self.style = Style().theme_use("alt")
+        Style().theme_use("alt")
 
         self.columnconfigure(1, weight=1)
         self.rowconfigure(2, weight=1)
 
         Label(self, text="Assignments root directory").grid(sticky=W, padx=5, pady=5)
-        
+        Label(self, text="Results directory").grid(sticky=W, padx=5, pady=5)
+
         hwEntry = Entry(self)
         hwEntry.grid(row=0, column=1, columnspan=2, sticky=W+E, padx=5, pady=5)
-
-        Label(self, text="Results directory").grid(sticky=W, padx=5, pady=5)
 
         resEntry =  Entry(self)
         resEntry.grid(row=1, column=1, columnspan=2, sticky=W+E, padx=5, pady=5)
@@ -41,7 +41,7 @@ class CorrectUSFrame(Frame):
         Button(self, text="Quit", underline=0, command=self.quit).grid(row=12, column=4, padx=5, pady=5)
         Button(self, text="OK", underline=0).grid(row=12, column=3, padx=5, pady=5)
 
-    def initMenu(self):
+    def initMenus(self):
         menubar = Menu(self.parent)
         self.parent.config(menu=menubar)
 
@@ -72,8 +72,7 @@ class CorrectUSFrame(Frame):
         for col in self.cols:
             self.tree.heading(col, text=col.title())
             # adjust the column's width to the header string
-            self.tree.column(col,
-            width=tkFont.Font().measure(col.title()))
+            self.tree.column(col, width=tkFont.Font().measure(col.title()))
 
         self.setErrors(get_default_errors())
 
@@ -90,6 +89,7 @@ class CorrectUSFrame(Frame):
         entry.insert(0, dname)
 
     def setErrors(self, errs):
+        self.tree.delete(*self.tree.get_children())
         self.errors = errs
         for _, err in self.errors.items():
             vals = [err.id, err.check, str(err.is_enabled), err.penalty]
@@ -102,19 +102,22 @@ class CorrectUSFrame(Frame):
 
     def loadConfig(self):
         config = askopenfilename()
-        conf = open(config, 'r')
-        data = yaml.safe_load(conf)
-        conf.close()
-        for d in data:
-            clang_msg = '[' + type_to_clang_check[d['error']['type']]  + ']'
-            marking_scheme[clang_msg] = d['error']['cost']
-        self.ge.set_marking_scheme(marking_scheme)
+        with open(config, 'r') as conf:
+            data = yaml.safe_load(conf)
+        errs = {}
+        for d in data.values():
+            errs[d['id']] = Error(d["id"], d["check"], d["is_enabled"], d["penalty"])
+
+        self.setErrors(errs)
+        self.ge.set_marking_scheme(errs)
 
     def saveConfig(self):
         config = asksaveasfilename()
         with open(config, 'w+') as outfile:
             for err in self.errors.values():
-                outfile.write(yaml.dump(dict(Error=dict(id=err.id, check=err.check, is_enabled=err.is_enabled, penalty=err.penalty)), default_flow_style=False))
+                err_dict = { err.id: { 'id':err.id, 'check':err.check, 'is_enabled':err.is_enabled, 'penalty':err.penalty } }
+                #err_dict = dict(Error=dict(id=err.id, check=err.check, is_enabled=err.is_enabled, penalty=err.penalty))
+                outfile.write(yaml.dump(err_dict, default_flow_style=False))
 
 def main():
     root = Tk()

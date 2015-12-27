@@ -1,21 +1,29 @@
 class Error:
-    def __init__(self, id, check, desc, is_enabled, penalty):
+    def __init__(self, id, check, is_enabled, penalty):
         self.id = id
         self.check = check
-        self.desc = desc
         self.is_enabled = is_enabled
         self.penalty = penalty
 
+def get_description(err_id):
+    if not hasattr(get_description, "id_to_desc"):
+        get_description.id_to_desc = {
+                'IfAssign' : '',
+                'SwitchBool' : ''
+                }
+
+    return get_description.id_to_desc[err_id]
+
 def get_default_errors():
     if not hasattr(get_default_errors, "errors"):
-        type_to_clang_check = { 
+        id_to_clang_check = { 
                 'IfAssign' : 'clang-diagnostic-parentheses', 
                 'SwitchBool' : 'clang-diagnostic-switch-bool'
                 }
 
         get_default_errors.errors = {
-                'IfAssign' : Error('IfAssign', type_to_clang_check['IfAssign'],'', True, 2),
-                'SwitchBool' : Error('SwitchBool', type_to_clang_check['SwitchBool'], '', True, 2)
+                'IfAssign' : Error('IfAssign', id_to_clang_check['IfAssign'], True, 2),
+                'SwitchBool' : Error('SwitchBool', id_to_clang_check['SwitchBool'], True, 2)
                 }
 
     return get_default_errors.errors
