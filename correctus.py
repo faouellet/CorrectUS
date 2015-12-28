@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import *
 
 import sys
 import yaml
@@ -12,12 +12,15 @@ class CorrectUSWidget(QMainWindow):
         super().__init__()
         self.initUI()
         self.initMenus()
-        #self.initListbox()
+        self.initTable()
         self.centerWindow()
         self.ge = GradingEngine()
         self.show()
 
     def initUI(self):
+        self.setGeometry(300,300,800,600)
+        self.setWindowTitle('CorrectUS')
+
         root_label = QLabel('Assignments root directory')
         root_edit = QLineEdit() 
         rootbtn = QPushButton('Browse', self) 
@@ -39,22 +42,19 @@ class CorrectUSWidget(QMainWindow):
         self.main_widget = QWidget()
         self.setCentralWidget(self.main_widget)
 
-        grid = QGridLayout()
-        self.main_widget.setLayout(grid)
+        self.grid = QGridLayout()
+        self.main_widget.setLayout(self.grid)
 
-        grid.addWidget(root_label, 0, 0, 1, 1)
-        grid.addWidget(root_edit, 0, 1, 1, 2)
-        grid.addWidget(rootbtn, 0, 3, 1, 1)
+        self.grid.addWidget(root_label, 0, 0, 1, 1)
+        self.grid.addWidget(root_edit, 0, 1, 1, 4)
+        self.grid.addWidget(rootbtn, 0, 5, 1, 1)
 
-        grid.addWidget(res_label, 1, 0, 1, 1)
-        grid.addWidget(res_edit, 1, 1, 1, 2)
-        grid.addWidget(resbtn, 1, 3, 1, 1)
+        self.grid.addWidget(res_label, 1, 0, 1, 1)
+        self.grid.addWidget(res_edit, 1, 1, 1, 4)
+        self.grid.addWidget(resbtn, 1, 5, 1, 1)
 
-        grid.addWidget(gbtn, 6, 2)
-        grid.addWidget(qbtn, 6, 3)
-
-        self.setGeometry(300,300,800,600)
-        self.setWindowTitle('CorrectUS')
+        self.grid.addWidget(gbtn, 6, 4)
+        self.grid.addWidget(qbtn, 6, 5)
 
     def initMenus(self):
         quit = QAction('&Exit', self)
@@ -70,6 +70,9 @@ class CorrectUSWidget(QMainWindow):
         save.setStatusTip('Save configuration file')
         save.triggered.connect(self.saveConfig)
 
+        about = QAction('&About', self)
+        #about.triggered.connect()
+
         self.statusBar()
 
         menubar = self.menuBar()
@@ -78,39 +81,68 @@ class CorrectUSWidget(QMainWindow):
         fileMenu.addAction(load)
         fileMenu.addAction(save)
 
-        #fileMenu.add_command(label="Load config", underline=0, command=self.loadConfig)
-        #fileMenu.add_command(label="Save config", underline=0, command=self.saveConfig)
-        #fileMenu.add_command(label="Quit", underline=0, command=self.quit)
-        #menubar.add_cascade(label="File", underline=0, menu=fileMenu)
+        helpMenu = menubar.addMenu('&Help')
+        helpMenu.addAction(about)
 
-        #menubar.add_cascade(label="About", underline=0)
+    def initTable(self):
+        self.errors = get_default_errors()
+        self.table = QTableWidget()
+        self.table.setRowCount(len(self.errors))
+        self.table.setColumnCount(4)
+        self.table.setHorizontalHeaderLabels(['ID','Description','Penalty','Enabled'])
+        self.table.horizontalHeader().setSectionResizeMode(1)
+        self.table.setShowGrid(False)
+        self.table.verticalHeader().setVisible(False)
+        self.table.resizeColumnsToContents()
+        self.table.setSortingEnabled(False)
 
-#    def initListbox(self):
-#        container = Frame(self)
-#        container.grid(row=2, column=0, columnspan=5, rowspan=10, sticky=W+E+S+N, padx=5, pady=5)
-#
-#        mlb = ScrolledMultiListbox(self)
-#        mlb.grid(row=2, column=0, columnspan=5, rowspan=10, sticky=W+E+S+N, padx=5, pady=5)
-#        mlb.config(columns=('ID','Description','Penalty','Enabled'), scrollmode='both')
-#
-#        self.cols = ['ID','Description','Penalty','Enabled']
-#        self.tree = Treeview(container, columns=self.cols, show='headings')
-#        vsb = Scrollbar(container, orient=VERTICAL, command=self.tree.yview)
-#        hsb = Scrollbar(container, orient=HORIZONTAL, command=self.tree.xview)
-#        self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-#        
-#        self.tree.grid(row=0, column=0, sticky=W+E+N+S, in_=container)
-#        vsb.grid(row=0, column=1, sticky=NS, in_=container)
-#        hsb.grid(row=1, column=0, sticky=EW, in_=container)
-#        container.grid_columnconfigure(0, weight=1)
-#        container.grid_rowconfigure(0, weight=1)
-#
-#        for col in self.cols:
-#            self.tree.heading(col, text=col.title())
-#            # adjust the column's width to the header string
-#            self.tree.column(col, width=tkFont.Font().measure(col.title()))
-#
-#        self.setErrors(get_default_errors())
+        self.table.cellChanged.connect(self.tableCellChanged)
+
+        self.setErrors()
+        
+        self.grid.addWidget(self.table, 2, 0, 4, 6)
+
+    def tableCellChanged(self, rowIdx, colIdx):
+        if colIdx == 2:
+            err_id = self.table.item(rowIdx, 0).text()
+            new_val = self.table.item(rowIdx, colIdx).text()
+            old_val = self.errors[err_id].penalty
+            if new_val.isdigit():
+                self.errors[err_id].penalty = int(new_val)
+            else:
+                self.table.item(rowIdx, colIdx).setText(str(old_val))
+
+    def chkboxClicked(self, err, state):
+        err.is_enabled = state is Qt.Checked
+
+    def setErrors(self):
+        for idx, err_key in enumerate(sorted(self.errors)):
+            err = self.errors[err_key]
+            id_item = QTableWidgetItem(err.id)
+            id_item.setFlags(Qt.ItemIsEnabled)
+
+            desc_item = QTableWidgetItem(err.check)
+            desc_item.setFlags(Qt.ItemIsEnabled)
+
+            penalty_item = QTableWidgetItem(str(err.penalty))
+            penalty_item.setTextAlignment(Qt.AlignCenter)
+
+            cell_widget = QWidget()
+            chk_box = QCheckBox()
+            if err.is_enabled:
+                chk_box.setCheckState(Qt.Checked)
+            else:
+                chk_box.setCheckState(Qt.Unchecked)
+            chk_box.stateChanged.connect(lambda state, err=err: self.chkboxClicked(err, state))
+            layout = QHBoxLayout(cell_widget)
+            layout.addWidget(chk_box)
+            layout.setAlignment(Qt.AlignCenter)
+            cell_widget.setLayout(layout)
+
+            self.table.setItem(idx, 0, id_item)
+            self.table.setItem(idx, 1, desc_item)
+            self.table.setItem(idx, 2, penalty_item)
+            self.table.setCellWidget(idx, 3, cell_widget)
 
     def centerWindow(self):
         qr = self.frameGeometry()
@@ -124,19 +156,6 @@ class CorrectUSWidget(QMainWindow):
             return
         entry.setText(dname)
 
-#    def setErrors(self, errs):
-#        self.tree.delete(*self.tree.get_children())
-#        self.errors = errs
-#        for _, err in self.errors.items():
-#            vals = [err.id, err.check, err.penalty]#, str(err.is_enabled)]
-#            self.tree.insert('', 'end', values=vals)
-#            Checkbutton(self.tree, variable=err.is_enabled)
-#            # adjust column's width if necessary to fit each value
-#            for ix, val in enumerate(vals):
-#                col_w = tkFont.Font().measure(val)
-#                if self.tree.column(self.cols[ix],width=None)<col_w:
-#                    self.tree.column(self.cols[ix], width=col_w)
-
     def loadConfig(self):
         config, _ = QFileDialog.getOpenFileName(self)
         if not config:
@@ -147,7 +166,8 @@ class CorrectUSWidget(QMainWindow):
         for d in data.values():
             errs[d['id']] = Error(d["id"], d["check"], d["is_enabled"], d["penalty"])
 
-        self.setErrors(errs)
+        self.errors = errs
+        self.setErrors()
         self.ge.set_marking_scheme(errs)
 
     def saveConfig(self):
