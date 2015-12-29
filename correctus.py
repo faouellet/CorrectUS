@@ -10,11 +10,11 @@ from errors import *
 class CorrectUSWidget(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.ge = GradingEngine()
         self.initUI()
         self.initMenus()
         self.initTable()
         self.centerWindow()
-        self.ge = GradingEngine()
         self.show()
 
     def initUI(self):
@@ -116,6 +116,8 @@ class CorrectUSWidget(QMainWindow):
         err.is_enabled = state is Qt.Checked
 
     def setErrors(self):
+        self.ge.set_marking_scheme(self.errors)
+
         for idx, err_key in enumerate(sorted(self.errors)):
             err = self.errors[err_key]
             id_item = QTableWidgetItem(err.id)
@@ -168,7 +170,6 @@ class CorrectUSWidget(QMainWindow):
 
         self.errors = errs
         self.setErrors()
-        self.ge.set_marking_scheme(errs)
 
     def saveConfig(self):
         config, _ = QFileDialog.getSaveFileName(self)
@@ -180,8 +181,7 @@ class CorrectUSWidget(QMainWindow):
                 outfile.write(yaml.dump(err_dict, default_flow_style=False))
 
     def grade(self, hw_root_dir, res_dir):
-        #self.ge.grade_all(hw_root_dir)
-        print (res_dir)
+        self.ge.grade_all(hw_root_dir, res_dir)
 
 def main():
     app = QApplication(sys.argv)
