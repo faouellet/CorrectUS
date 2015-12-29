@@ -1,0 +1,10 @@
+IfAssign:
+  check: clang-diagnostic-parentheses
+  id: IfAssign
+  is_enabled: false
+  penalty: 2
+SwitchBool:
+  check: clang-diagnostic-switch-bool
+  id: SwitchBool
+  is_enabled: true
+  penalty: 2
