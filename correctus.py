@@ -7,6 +7,7 @@ import yaml
 from gradingengine import *
 from errors import *
 
+
 class CorrectUSWidget(QMainWindow):
     def __init__(self):
         super().__init__()
