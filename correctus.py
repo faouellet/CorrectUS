@@ -22,7 +22,7 @@ class CorrectUSWidget(QMainWindow):
         self.setGeometry(300,300,800,600)
         self.setWindowTitle('CorrectUS')
 
-        root_label = QLabel('Assignments root directory')
+        root_label = QLabel('Assignments directory')
         root_edit = QLineEdit() 
         rootbtn = QPushButton('Browse', self) 
         rootbtn.clicked.connect(lambda: self.getDir(root_edit))
@@ -183,6 +183,9 @@ class CorrectUSWidget(QMainWindow):
 
     def grade(self, hw_root_dir, res_dir):
         self.ge.grade_all(hw_root_dir, res_dir)
+        done = QMessageBox(QMessageBox.Information, 'Done','Grading complete', QMessageBox.Ok, self)
+        done.show()
+
 
 def main():
     app = QApplication(sys.argv)
