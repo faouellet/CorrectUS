@@ -35,12 +35,12 @@ class CorrectUSWidget(QMainWindow):
         test_data_label = QLabel('Test data directory')
         test_data_edit = QLineEdit() 
         test_data_btn = QPushButton('Browse', self) 
-        test_data_btn.clicked.connect(lambda: self.getDir(root_edit))
+        test_data_btn.clicked.connect(lambda: self.getDir(test_data_edit))
 
         exe_label = QLabel('Answer program')
         exe_edit = QLineEdit() 
         exe_btn = QPushButton('Browse', self) 
-        exe_btn.clicked.connect(lambda: self.getDir(res_edit))
+        exe_btn.clicked.connect(lambda: self.getExe(exe_edit))
 
         gbtn = QPushButton('Grade', self)
         gbtn.clicked.connect(lambda: self.grade(root_edit.text(), res_edit.text()))
@@ -176,6 +176,15 @@ class CorrectUSWidget(QMainWindow):
         if not dname:
             return
         entry.setText(dname)
+
+    def getExe(self, entry):
+        ename, _ = QFileDialog.getOpenFileName(self)
+        if not ename:
+            return
+        elif not os.access(ename, os.X_OK):
+            err = QMessageBox(QMessageBox.Critical, 'Error','%s is not an executable program' % ename, QMessageBox.Ok, self)
+            err.show()
+        entry.setText(ename)
 
     def loadConfig(self):
         config, _ = QFileDialog.getOpenFileName(self)
