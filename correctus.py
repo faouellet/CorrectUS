@@ -19,28 +19,43 @@ class CorrectUSWidget(QMainWindow):
         self.show()
 
     def initUI(self):
+        def getDir(self, entry):
+            dname = QFileDialog.getExistingDirectory(self)
+            if not dname:
+                return
+            entry.setText(dname)
+
+        def getExe(self, entry):
+            ename, _ = QFileDialog.getOpenFileName(self)
+            if not ename:
+                return
+            elif not os.access(ename, os.X_OK):
+                err = QMessageBox(QMessageBox.Critical, 'Error','%s is not an executable program' % ename, QMessageBox.Ok, self)
+                err.show()
+            entry.setText(ename)
+
         self.setGeometry(300,300,800,600)
         self.setWindowTitle('CorrectUS')
 
         root_label = QLabel('Assignments directory')
         root_edit = QLineEdit() 
         root_btn = QPushButton('Browse', self) 
-        root_btn.clicked.connect(lambda: self.getDir(root_edit))
+        root_btn.clicked.connect(lambda: getDir(self, root_edit))
 
         res_label = QLabel('Results directory')
         res_edit = QLineEdit() 
         res_btn = QPushButton('Browse', self) 
-        res_btn.clicked.connect(lambda: self.getDir(res_edit))
+        res_btn.clicked.connect(lambda: getDir(self, res_edit))
 
         test_data_label = QLabel('Test data directory')
         test_data_edit = QLineEdit() 
         test_data_btn = QPushButton('Browse', self) 
-        test_data_btn.clicked.connect(lambda: self.getDir(test_data_edit))
+        test_data_btn.clicked.connect(lambda: getDir(self, test_data_edit))
 
         exe_label = QLabel('Answer program')
         exe_edit = QLineEdit() 
         exe_btn = QPushButton('Browse', self) 
-        exe_btn.clicked.connect(lambda: self.getExe(exe_edit))
+        exe_btn.clicked.connect(lambda: getExe(self, exe_edit))
 
         gbtn = QPushButton('Grade', self)
         gbtn.clicked.connect(lambda: self.grade(root_edit.text(), res_edit.text()))
@@ -76,6 +91,10 @@ class CorrectUSWidget(QMainWindow):
         self.grid.addWidget(qbtn, 8, 5)
 
     def initMenus(self):
+        def showAboutMenu():
+            done = QMessageBox(QMessageBox.Information, 'About','Automatic grading of C++ homeworks', QMessageBox.Ok, self)
+            done.show()
+
         quit = QAction('&Exit', self)
         quit.setShortcut('Ctrl+Q')
         quit.setStatusTip('Exit application')
@@ -90,7 +109,7 @@ class CorrectUSWidget(QMainWindow):
         save.triggered.connect(self.saveConfig)
 
         about = QAction('&About', self)
-        #about.triggered.connect()
+        about.triggered.connect(lambda: showAboutMenu())
 
         self.statusBar()
 
@@ -171,21 +190,6 @@ class CorrectUSWidget(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def getDir(self, entry):
-        dname = QFileDialog.getExistingDirectory(self)
-        if not dname:
-            return
-        entry.setText(dname)
-
-    def getExe(self, entry):
-        ename, _ = QFileDialog.getOpenFileName(self)
-        if not ename:
-            return
-        elif not os.access(ename, os.X_OK):
-            err = QMessageBox(QMessageBox.Critical, 'Error','%s is not an executable program' % ename, QMessageBox.Ok, self)
-            err.show()
-        entry.setText(ename)
-
     def loadConfig(self):
         config, _ = QFileDialog.getOpenFileName(self)
         if not config:
@@ -216,7 +220,7 @@ class CorrectUSWidget(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    corr = CorrectUSWidget()
+    CorrectUSWidget()
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
