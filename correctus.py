@@ -18,7 +18,7 @@ class CorrectUSWidget(QMainWindow):
         self.centerWindow()
         self.show()
 
-    def initUI(self):
+    def createHWInfosGroupBox(self):
         def getDir(self, entry):
             dname = QFileDialog.getExistingDirectory(self)
             if not dname:
@@ -33,9 +33,6 @@ class CorrectUSWidget(QMainWindow):
                 err = QMessageBox(QMessageBox.Critical, 'Error','%s is not an executable program' % ename, QMessageBox.Ok, self)
                 err.show()
             entry.setText(ename)
-
-        self.setGeometry(300,300,800,600)
-        self.setWindowTitle('CorrectUS')
 
         root_label = QLabel('Assignments directory')
         root_edit = QLineEdit() 
@@ -57,6 +54,35 @@ class CorrectUSWidget(QMainWindow):
         exe_btn = QPushButton('Browse', self) 
         exe_btn.clicked.connect(lambda: getExe(self, exe_edit))
 
+        gb_grid = QGridLayout()
+
+        gb_grid.addWidget(root_label, 0, 0, 1, 1)
+        gb_grid.addWidget(root_edit, 0, 1, 1, 4)
+        gb_grid.addWidget(root_btn, 0, 5, 1, 1)
+
+        gb_grid.addWidget(res_label, 1, 0, 1, 1)
+        gb_grid.addWidget(res_edit, 1, 1, 1, 4)
+        gb_grid.addWidget(res_btn, 1, 5, 1, 1)
+
+        gb_grid.addWidget(test_data_label, 2, 0, 1, 1)
+        gb_grid.addWidget(test_data_edit, 2, 1, 1, 4)
+        gb_grid.addWidget(test_data_btn, 2, 5, 1, 1)
+
+        gb_grid.addWidget(exe_label, 3, 0, 1, 1)
+        gb_grid.addWidget(exe_edit, 3, 1, 1, 4)
+        gb_grid.addWidget(exe_btn, 3, 5, 1, 1)
+
+        hw_infos = QGroupBox('Homeworks informations')
+        hw_infos.setLayout(gb_grid)
+        #hw_infos.setStyleSheet("QGroupBox { border: 3px solid rgb(0, 0, 0); }")
+        return hw_infos
+
+    def initUI(self):
+        self.setGeometry(300,300,800,600)
+        self.setWindowTitle('CorrectUS')
+
+        hw_infos_gb = self.createHWInfosGroupBox()
+
         gbtn = QPushButton('Grade', self)
         gbtn.clicked.connect(lambda: self.grade(root_edit.text(), res_edit.text()))
         gbtn.resize(gbtn.sizeHint())
@@ -71,22 +97,7 @@ class CorrectUSWidget(QMainWindow):
         self.grid = QGridLayout()
         self.main_widget.setLayout(self.grid)
 
-        self.grid.addWidget(root_label, 0, 0, 1, 1)
-        self.grid.addWidget(root_edit, 0, 1, 1, 4)
-        self.grid.addWidget(root_btn, 0, 5, 1, 1)
-
-        self.grid.addWidget(res_label, 1, 0, 1, 1)
-        self.grid.addWidget(res_edit, 1, 1, 1, 4)
-        self.grid.addWidget(res_btn, 1, 5, 1, 1)
-
-        self.grid.addWidget(test_data_label, 2, 0, 1, 1)
-        self.grid.addWidget(test_data_edit, 2, 1, 1, 4)
-        self.grid.addWidget(test_data_btn, 2, 5, 1, 1)
-
-        self.grid.addWidget(exe_label, 3, 0, 1, 1)
-        self.grid.addWidget(exe_edit, 3, 1, 1, 4)
-        self.grid.addWidget(exe_btn, 3, 5, 1, 1)
-
+        self.grid.addWidget(hw_infos_gb, 0, 0, 4, 6)
         self.grid.addWidget(gbtn, 8, 4)
         self.grid.addWidget(qbtn, 8, 5)
 
