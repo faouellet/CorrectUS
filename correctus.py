@@ -12,37 +12,45 @@ class CorrectUSWidget(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ge = GradingEngine()
+        self.root_dir = ""
+        self.res_dir = ""
+        self.test_data_dir = ""
+        self.exe = ""
+
         self.initUI()
         self.initMenus()
         self.initTable()
         self.centerWindow()
         self.show()
 
-    def getDir(self, entry):
+    def getDir(self, entry, dir):
             dname = QFileDialog.getExistingDirectory(self)
             if not dname:
                 return
             entry.setText(dname)
+            dir = dname
 
-    def getExe(self, entry):
+    def getExe(self, entry, exe):
         ename, _ = QFileDialog.getOpenFileName(self)
         if not ename:
             return
         elif not os.access(ename, os.X_OK):
             err = QMessageBox(QMessageBox.Critical, 'Error', '%s is not an executable program' % ename, QMessageBox.Ok, self)
             err.show()
+            return
         entry.setText(ename)
+        exe = ename
 
     def createHWInfosGroupBox(self):
         root_label = QLabel('Assignments directory')
         root_edit = QLineEdit() 
         root_btn = QPushButton('Browse', self) 
-        root_btn.clicked.connect(lambda: self.getDir(root_edit))
+        root_btn.clicked.connect(lambda: self.getDir(root_edit, self.root_dir))
 
         res_label = QLabel('Results directory')
         res_edit = QLineEdit() 
         res_btn = QPushButton('Browse', self) 
-        res_btn.clicked.connect(lambda: self.getDir(res_edit))
+        res_btn.clicked.connect(lambda: self.getDir(res_edit, self.res_dir))
 
         gb_grid = QGridLayout()
 
@@ -63,12 +71,12 @@ class CorrectUSWidget(QMainWindow):
         test_data_label = QLabel('Test data directory')
         test_data_edit = QLineEdit() 
         test_data_btn = QPushButton('Browse', self) 
-        test_data_btn.clicked.connect(lambda: self.getDir(test_data_edit))
+        test_data_btn.clicked.connect(lambda: self.getDir(test_data_edit, self.test_data_dir))
 
         exe_label = QLabel('Answer program')
         exe_edit = QLineEdit() 
         exe_btn = QPushButton('Browse', self) 
-        exe_btn.clicked.connect(lambda: self.getExe(exe_edit))
+        exe_btn.clicked.connect(lambda: self.getExe(exe_edit, self.exe))
 
         point_label = QLabel('Points:')
         point_edit = QLineEdit()
@@ -100,7 +108,7 @@ class CorrectUSWidget(QMainWindow):
         correctness_gb = self.createCorrecnessGroupBox()
 
         gbtn = QPushButton('Grade', self)
-        gbtn.clicked.connect(lambda: self.grade(root_edit.text(), res_edit.text()))
+        gbtn.clicked.connect(lambda: self.grade(self.root_dir, self.res_dir))
         gbtn.resize(gbtn.sizeHint())
 
         qbtn = QPushButton('Quit', self)
