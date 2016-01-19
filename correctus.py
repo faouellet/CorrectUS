@@ -4,6 +4,7 @@ from PyQt5.QtCore import *
 import sys
 import yaml
 
+from generalinfosgb import *
 from gradingengine import *
 from errors import *
 
@@ -41,31 +42,7 @@ class CorrectUSWidget(QMainWindow):
         entry.setText(ename)
         exe = ename
 
-    def createHWInfosGroupBox(self):
-        root_label = QLabel('Assignments directory')
-        root_edit = QLineEdit() 
-        root_btn = QPushButton('Browse', self) 
-        root_btn.clicked.connect(lambda: self.getDir(root_edit, self.root_dir))
-
-        res_label = QLabel('Results directory')
-        res_edit = QLineEdit() 
-        res_btn = QPushButton('Browse', self) 
-        res_btn.clicked.connect(lambda: self.getDir(res_edit, self.res_dir))
-
-        gb_grid = QGridLayout()
-
-        gb_grid.addWidget(root_label, 0, 0, 1, 1)
-        gb_grid.addWidget(root_edit, 0, 1, 1, 4)
-        gb_grid.addWidget(root_btn, 0, 5, 1, 1)
-
-        gb_grid.addWidget(res_label, 1, 0, 1, 1)
-        gb_grid.addWidget(res_edit, 1, 1, 1, 4)
-        gb_grid.addWidget(res_btn, 1, 5, 1, 1)
-
-        hw_infos = QGroupBox('Homeworks informations')
-        hw_infos.setLayout(gb_grid)
-        #hw_infos.setStyleSheet("QGroupBox { border: 3px solid rgb(0, 0, 0); }")
-        return hw_infos
+    
 
     def createCorrecnessGroupBox(self):
         test_data_label = QLabel('Test data directory')
@@ -104,7 +81,7 @@ class CorrectUSWidget(QMainWindow):
         self.setGeometry(300,300,800,600)
         self.setWindowTitle('CorrectUS')
 
-        hw_infos_gb = self.createHWInfosGroupBox()
+        hw_infos_gb = GeneralInfoGroupBox()
         correctness_gb = self.createCorrecnessGroupBox()
 
         gbtn = QPushButton('Grade', self)
