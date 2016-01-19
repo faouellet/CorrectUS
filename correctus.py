@@ -5,6 +5,7 @@ import sys
 import yaml
 
 from correctnessgb import *
+from documentationgb import *
 from generalinfosgb import *
 from gradingengine import *
 from errors import *
@@ -21,7 +22,7 @@ class CorrectUSWidget(QMainWindow):
 
         self.initUI()
         self.initMenus()
-        self.initTable()
+        #self.initTable()
         self.centerWindow()
         self.show()
 
@@ -32,6 +33,7 @@ class CorrectUSWidget(QMainWindow):
 
         hw_infos_gb = GeneralInfoGroupBox()
         correctness_gb = CorrectnessGroupBox()
+        documentation_gb = DocumentationoGroupBox()
 
         gbtn = QPushButton('Grade', self)
         gbtn.clicked.connect(lambda: self.grade(self.root_dir, self.res_dir))
@@ -49,6 +51,7 @@ class CorrectUSWidget(QMainWindow):
 
         self.grid.addWidget(hw_infos_gb, 0, 0, 2, 6)
         self.grid.addWidget(correctness_gb, 2, 0, 2, 6)
+        self.grid.addWidget(documentation_gb, 4, 0, 1, 3)
         self.grid.addWidget(gbtn, 8, 4)
         self.grid.addWidget(qbtn, 8, 5)
 

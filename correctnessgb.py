@@ -5,7 +5,6 @@ import os
 
 class CorrectnessGroupBox(QGroupBox):
     def __init__(self):
-
         def getDir(self, entry, dir):
             dname = QFileDialog.getExistingDirectory(self)
             if not dname:
@@ -25,7 +24,7 @@ class CorrectnessGroupBox(QGroupBox):
                 return
             entry.setText(ename)
             exe = ename
-        
+
         super().__init__()
         self.test_data_dir = ""
         self.exe = ""
@@ -40,7 +39,7 @@ class CorrectnessGroupBox(QGroupBox):
         exe_btn = QPushButton('Browse', self) 
         exe_btn.clicked.connect(lambda: self.getExe(exe_edit, self.exe))
 
-        point_label = QLabel('Points:')
+        point_label = QLabel('Maximum points deduction:')
         point_edit = QLineEdit()
         point_edit.setMaximumWidth(50)
 
