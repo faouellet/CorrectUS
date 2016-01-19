@@ -5,6 +5,15 @@ import os
 
 class GeneralInfoGroupBox(QGroupBox):
     def __init__(self):
+        def getDir(self, entry, dir):
+            dname = QFileDialog.getExistingDirectory(self)
+            if not dname:
+                return
+            if not os.isdir(dname):
+                return
+            entry.setText(dname)
+            dir = dname
+            
         super().__init__()
         self.root_dir = ""
         self.res_dir = ""
@@ -31,13 +40,3 @@ class GeneralInfoGroupBox(QGroupBox):
 
         self.setLayout(gb_grid)
         self.setTitle('General informations')
-
-
-    def getDir(self, entry, dir):
-            dname = QFileDialog.getExistingDirectory(self)
-            if not dname:
-                return
-            if not os.isdir(dname):
-                return
-            entry.setText(dname)
-            dir = dname

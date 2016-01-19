@@ -4,6 +4,7 @@ from PyQt5.QtCore import *
 import sys
 import yaml
 
+from correctnessgb import *
 from generalinfosgb import *
 from gradingengine import *
 from errors import *
@@ -24,65 +25,13 @@ class CorrectUSWidget(QMainWindow):
         self.centerWindow()
         self.show()
 
-    def getDir(self, entry, dir):
-            dname = QFileDialog.getExistingDirectory(self)
-            if not dname:
-                return
-            entry.setText(dname)
-            dir = dname
-
-    def getExe(self, entry, exe):
-        ename, _ = QFileDialog.getOpenFileName(self)
-        if not ename:
-            return
-        elif not os.access(ename, os.X_OK):
-            err = QMessageBox(QMessageBox.Critical, 'Error', '%s is not an executable program' % ename, QMessageBox.Ok, self)
-            err.show()
-            return
-        entry.setText(ename)
-        exe = ename
-
-    
-
-    def createCorrecnessGroupBox(self):
-        test_data_label = QLabel('Test data directory')
-        test_data_edit = QLineEdit() 
-        test_data_btn = QPushButton('Browse', self) 
-        test_data_btn.clicked.connect(lambda: self.getDir(test_data_edit, self.test_data_dir))
-
-        exe_label = QLabel('Answer program')
-        exe_edit = QLineEdit() 
-        exe_btn = QPushButton('Browse', self) 
-        exe_btn.clicked.connect(lambda: self.getExe(exe_edit, self.exe))
-
-        point_label = QLabel('Points:')
-        point_edit = QLineEdit()
-        point_edit.setMaximumWidth(50)
-
-        gb_grid = QGridLayout()
-
-        gb_grid.addWidget(test_data_label, 0, 0, 1, 1)
-        gb_grid.addWidget(test_data_edit, 0, 1, 1, 4)
-        gb_grid.addWidget(test_data_btn, 0, 5, 1, 1)
-
-        gb_grid.addWidget(exe_label, 1, 0, 1, 1)
-        gb_grid.addWidget(exe_edit, 1, 1, 1, 4)
-        gb_grid.addWidget(exe_btn, 1, 5, 1, 1)
-
-        gb_grid.addWidget(point_label, 2, 0, 1, 1)
-        gb_grid.addWidget(point_edit, 2, 1, 1, 1)
-
-        cgb = QGroupBox('Correctness')
-        cgb.setLayout(gb_grid)
-        #cgb.setStyleSheet("QGroupBox { border: 3px solid rgb(0, 0, 0); }")
-        return cgb
 
     def initUI(self):
         self.setGeometry(300,300,800,600)
         self.setWindowTitle('CorrectUS')
 
         hw_infos_gb = GeneralInfoGroupBox()
-        correctness_gb = self.createCorrecnessGroupBox()
+        correctness_gb = CorrectnessGroupBox()
 
         gbtn = QPushButton('Grade', self)
         gbtn.clicked.connect(lambda: self.grade(self.root_dir, self.res_dir))
