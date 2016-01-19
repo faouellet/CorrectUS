@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 
 
-class DocumentationoGroupBox(QGroupBox):
+class DocumentationGroupBox(QGroupBox):
     def __init__(self):            
         super().__init__()
 
