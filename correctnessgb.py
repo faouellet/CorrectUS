@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QGroupBox, QLabel, QLineEdit, QPushButton, QGridLayout
+from PyQt5.QtGui import QIntValidator
 
 import os
 
@@ -25,9 +26,13 @@ class CorrectnessGroupBox(QGroupBox):
             entry.setText(ename)
             exe = ename
 
+        def onEdit(max_deduction, line_edit):
+            max_deduction = line_edit.text()
+
         super().__init__()
         self.test_data_dir = ""
         self.exe = ""
+        self.max_deduction = 0
 
         test_data_label = QLabel('Test data directory')
         test_data_edit = QLineEdit() 
@@ -42,6 +47,9 @@ class CorrectnessGroupBox(QGroupBox):
         point_label = QLabel('Maximum points deduction:')
         point_edit = QLineEdit()
         point_edit.setMaximumWidth(50)
+        point_validator = QIntValidator()
+        point_edit.setValidator(point_validator)
+        point_edit.editingFinished.connect(lambda: onEdit(self.max_deduction, point_edit))
 
         gb_grid = QGridLayout()
 
