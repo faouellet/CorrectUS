@@ -1,15 +1,15 @@
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QGroupBox, QLabel, QLineEdit, QPushButton, QGridLayout
 
 import os
 
 
 class GeneralInfoGroupBox(QGroupBox):
     def __init__(self):
-        def getDir(self, entry, dir):
+        def getDir(entry, dir):
             dname = QFileDialog.getExistingDirectory(self)
             if not dname:
                 return
-            if not os.isdir(dname):
+            if not os.path.isdir(dname):
                 return
             entry.setText(dname)
             dir = dname
@@ -21,12 +21,12 @@ class GeneralInfoGroupBox(QGroupBox):
         root_label = QLabel('Assignments directory')
         root_edit = QLineEdit() 
         root_btn = QPushButton('Browse', self) 
-        root_btn.clicked.connect(lambda: self.getDir(root_edit, self.root_dir))
+        root_btn.clicked.connect(lambda: getDir(root_edit, self.root_dir))
 
         res_label = QLabel('Results directory')
         res_edit = QLineEdit() 
         res_btn = QPushButton('Browse', self) 
-        res_btn.clicked.connect(lambda: self.getDir(res_edit, self.res_dir))
+        res_btn.clicked.connect(lambda: getDir(res_edit, self.res_dir))
 
         gb_grid = QGridLayout()
 

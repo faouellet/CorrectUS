@@ -1,20 +1,20 @@
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QGroupBox, QLabel, QLineEdit, QPushButton, QGridLayout
 
 import os
 
 
 class CorrectnessGroupBox(QGroupBox):
     def __init__(self):
-        def getDir(self, entry, dir):
+        def getDir(entry, dir):
             dname = QFileDialog.getExistingDirectory(self)
             if not dname:
                 return
-            if not os.isdir(dname):
+            if not os.path.isdir(dname):
                 return
             entry.setText(dname)
             dir = dname
 
-        def getExe(self, entry, exe):
+        def getExe(entry, exe):
             ename, _ = QFileDialog.getOpenFileName(self)
             if not ename:
                 return
@@ -32,12 +32,12 @@ class CorrectnessGroupBox(QGroupBox):
         test_data_label = QLabel('Test data directory')
         test_data_edit = QLineEdit() 
         test_data_btn = QPushButton('Browse', self) 
-        test_data_btn.clicked.connect(lambda: self.getDir(test_data_edit, self.test_data_dir))
+        test_data_btn.clicked.connect(lambda: getDir(test_data_edit, self.test_data_dir))
 
         exe_label = QLabel('Answer program')
         exe_edit = QLineEdit() 
         exe_btn = QPushButton('Browse', self) 
-        exe_btn.clicked.connect(lambda: self.getExe(exe_edit, self.exe))
+        exe_btn.clicked.connect(lambda: getExe(exe_edit, self.exe))
 
         point_label = QLabel('Maximum points deduction:')
         point_edit = QLineEdit()
