@@ -4,8 +4,10 @@ from PyQt5.QtCore import *
 import sys
 import yaml
 
+from codingstandards import *
 from correctnessgb import *
 from documentationgb import *
+from errorgb import *
 from generalinfosgb import *
 from includegb import *
 
@@ -28,7 +30,6 @@ class CorrectUSWidget(QMainWindow):
         self.centerWindow()
         self.show()
 
-
     def initUI(self):
         self.setGeometry(300,300,800,600)
         self.setWindowTitle('CorrectUS')
@@ -37,6 +38,7 @@ class CorrectUSWidget(QMainWindow):
         correctness_gb = CorrectnessGroupBox()
         documentation_gb = DocumentationGroupBox()
         include_gb = IncludeGroupBox()
+        standards_gb = CodingStandardsGroupBox()
 
         gbtn = QPushButton('Grade', self)
         gbtn.clicked.connect(lambda: self.grade(self.root_dir, self.res_dir))
@@ -56,8 +58,9 @@ class CorrectUSWidget(QMainWindow):
         self.grid.addWidget(correctness_gb, 2, 0, 2, 6)
         self.grid.addWidget(documentation_gb, 4, 0, 1, 3)
         self.grid.addWidget(include_gb, 4, 3, 1, 3)
-        self.grid.addWidget(gbtn, 8, 4)
-        self.grid.addWidget(qbtn, 8, 5)
+        self.grid.addWidget(standards_gb, 5, 0, 2, 6)
+        self.grid.addWidget(gbtn, 7, 4)
+        self.grid.addWidget(qbtn, 7, 5)
 
     def initMenus(self):
         def showAboutMenu():
