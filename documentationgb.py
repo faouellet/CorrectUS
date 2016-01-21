@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QGroupBox, QLabel, QLineEdit, QGridLayout
 from PyQt5.QtGui import QIntValidator
 
 
