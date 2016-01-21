@@ -27,7 +27,7 @@ class CorrectnessGroupBox(QGroupBox):
             exe = ename
 
         def onEdit(max_deduction, line_edit):
-            max_deduction = line_edit.text()
+            max_deduction = int(line_edit.text())
 
         super().__init__()
         self.test_data_dir = ""
