@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QGroupBox, QLabel, QLineEdit, QGridLayout, QCheckBox
+from PyQt5.QtWidgets import QGroupBox, QLabel, QLineEdit, QGridLayout, QCheckBox, QMessageBox
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import Qt
 
@@ -11,7 +11,7 @@ class IncludeGroupBox(QGroupBox):
         def onEditPoint(deduction, line_edit, max_deduction):
             point_deduction = int(line_edit.text())
             if point_deduction > max_deduction:
-                error = QMessageBox(QMessageBox.Critical, 'About','Automatic grading of C++ homeworks', QMessageBox.Ok, self)
+                error = QMessageBox(QMessageBox.Critical, 'Error',"The point deduction per error missing can't be greater than the maximum point deduction", QMessageBox.Ok, self)
                 error.show()
             else:
                 deduction = point_deduction

@@ -1,40 +1,63 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QGroupBox, QLabel, QLineEdit, QGridLayout, QComboBox, QMessageBox
+from PyQt5.QtGui import QIntValidator
+from PyQt5.QtCore import Qt
 
 
 class CodingStandardsGroupBox(QGroupBox):
-    def __init__(self):            
+    def __init__(self):   
+        def onMaxEditPoint(max_deduction, line_edit):
+            max_deduction = int(line_edit.text())
+
+        def onEditPoint(deduction, line_edit, max_deduction):
+            point_deduction = int(line_edit.text())
+            if point_deduction > max_deduction:
+                error = QMessageBox(QMessageBox.Critical, 'Error',"The point deduction per error missing can't be greater than the maximum point deduction", QMessageBox.Ok, self)
+                error.show()
+            else:
+                deduction = point_deduction
+
+        def onTextChanged(new_text, member):
+            member = new_text
+
+        def createLabelAndComboBox(label_text, combo_choices, member):
+            label = QLabel(label_text)
+            choices = QComboBox()
+            choices.addItems(combo_choices)
+            choices.currentIndexChanged.connect(lambda idx: onTextChanged(combo_choices[idx], member))
+            return label, choices
+
         super().__init__()
+        self.var_name = ""
+        self.const_name = ""
+        self.func_name = ""
+        self.cs_name = ""
+        self.indent_style = ""
+        self.max_deduction = 0
+        self.deduction_per_elem = 0
+
+        point_validator = QIntValidator()
 
         point_label = QLabel('Points deduction per error:')
         point_edit = QLineEdit()
         point_edit.setMaximumWidth(50)
+        point_edit.setText('0')
+        point_edit.setValidator(point_validator)
+        point_edit.editingFinished.connect(lambda: onEditPoint(self.deduction_per_elem, point_edit, self.max_deduction))
 
         max_point_label = QLabel('Maximum points deduction:')
         max_point_edit = QLineEdit()
         max_point_edit.setMaximumWidth(50)
+        max_point_edit.setText('0')
+        max_point_edit.setValidator(point_validator)
+        max_point_edit.editingFinished.connect(lambda: onMaxEditPoint(self.max_deduction, max_point_edit))
 
         naming_styles = ['CamelCase', 'camelCase', 'SNAKE_CASE']
 
-        var_label = QLabel('Variable name')
-        var_choices = QComboBox()
-        var_choices.addItems(naming_styles)
-
-        func_label = QLabel('Function name')
-        func_choices = QComboBox()
-        func_choices.addItems(naming_styles)
-
-        const_label = QLabel('Constant name')
-        const_choices = QComboBox()
-        const_choices.addItems(naming_styles)
-
-        cs_label = QLabel('Class/Struct name')
-        cs_choices = QComboBox()
-        cs_choices.addItems(naming_styles)        
-
-        indent_label = QLabel('Indentation style')
-        indent_choices = QComboBox()
-        indent_choices.addItems(['Allman', 'Egyptian'])
+        var_label, var_choices = createLabelAndComboBox('Variable name', naming_styles, self.var_name)
+        func_label, func_choices = createLabelAndComboBox('Function name', naming_styles, self.func_name)
+        cs_label, cs_choices = createLabelAndComboBox('Class/Struct name', naming_styles, self.cs_name)
+        const_label, const_choices = createLabelAndComboBox('Constant name', naming_styles, self.const_name)
+        indent_label, indent_choices = createLabelAndComboBox('Indentation style', ['Allman', 'Egyptian'], self.indent_style)
 
         gb_grid = QGridLayout()
         gb_grid.setAlignment(Qt.AlignCenter)
