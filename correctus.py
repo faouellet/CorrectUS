@@ -18,10 +18,6 @@ class CorrectUSWidget(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ge = GradingEngine()
-        self.root_dir = ""
-        self.res_dir = ""
-        self.test_data_dir = ""
-        self.exe = ""
 
         self.initUI()
         self.initMenus()
@@ -41,7 +37,7 @@ class CorrectUSWidget(QMainWindow):
         errors_gb = ErrorGroupBox()
 
         gbtn = QPushButton('Grade', self)
-        gbtn.clicked.connect(lambda: self.grade(self.root_dir, self.res_dir))
+        gbtn.clicked.connect(lambda: self.grade(hw_infos_gb.root_dir, hw_infos_gb.res_dir, correctness_gb.exe, correctness_gb.test_data_dir))
         gbtn.resize(gbtn.sizeHint())
 
         qbtn = QPushButton('Quit', self)
@@ -128,8 +124,9 @@ class CorrectUSWidget(QMainWindow):
                 outfile.write(yaml.dump(err_dict, default_flow_style=False))
 
 
-    def grade(self, hw_root_dir, res_dir):
-        self.ge.grade_all(hw_root_dir, res_dir)
+    def grade(self, hw_root_dir, res_dir, correct_exe, data_dir):
+        #self.ge.set_marking_scheme()
+        self.ge.grade_all(hw_root_dir, res_dir, correct_exe, data_dir)
         done = QMessageBox(QMessageBox.Information, 'Done','Grading complete', QMessageBox.Ok, self)
         done.show()
 
