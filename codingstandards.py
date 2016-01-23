@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 
 
 class CodingStandardsGroupBox(QGroupBox):
-    def __init__(self):   
+    def __init__(self, enabled=False, var_name='', const_name='', func_name='', cs_name='', indent_style='', max_deduction=0, deduction=0):   
         def onMaxEditPoint(max_deduction, line_edit):
             max_deduction = int(line_edit.text())
 
@@ -27,13 +27,13 @@ class CodingStandardsGroupBox(QGroupBox):
             return label, choices
 
         super().__init__()
-        self.var_name = ""
-        self.const_name = ""
-        self.func_name = ""
-        self.cs_name = ""
-        self.indent_style = ""
-        self.max_deduction = 0
-        self.deduction_per_elem = 0
+        self.var_name = var_name
+        self.const_name = const_name
+        self.func_name = func_name
+        self.cs_name = cs_name
+        self.indent_style = indent_style
+        self.max_deduction = max_deduction
+        self.deduction_per_elem = deduction
 
         point_validator = QIntValidator()
 
@@ -85,4 +85,4 @@ class CodingStandardsGroupBox(QGroupBox):
         self.setLayout(gb_grid)
         self.setTitle('Coding standard')
         self.setCheckable(True)
-        self.setChecked(False)
+        self.setChecked(enabled)

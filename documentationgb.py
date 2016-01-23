@@ -3,7 +3,7 @@ from PyQt5.QtGui import QIntValidator
 
 
 class DocumentationGroupBox(QGroupBox):
-    def __init__(self):            
+    def __init__(self, enabled=False, max_deduction=0, deduction=0):            
         def onMaxEditPoint(max_deduction, line_edit):
             max_deduction = int(line_edit.text())
 
@@ -16,8 +16,8 @@ class DocumentationGroupBox(QGroupBox):
                 deduction = point_deduction
 
         super().__init__()
-        self.max_deduction = 0;
-        self.deduction_per_elem = 0
+        self.max_deduction = max_deduction;
+        self.deduction_per_elem = deduction
 
         point_validator = QIntValidator()
         
@@ -45,4 +45,4 @@ class DocumentationGroupBox(QGroupBox):
         self.setLayout(gb_grid)
         self.setTitle('Documentation')
         self.setCheckable(True)
-        self.setChecked(False)
+        self.setChecked(enabled)

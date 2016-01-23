@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 
 
 class IncludeGroupBox(QGroupBox):
-    def __init__(self):         
+    def __init__(self, enabled=False, max_deduction=0, deduction=0, check_superfluous=False, check_order=False):         
         def onMaxEditPoint(max_deduction, line_edit):
             max_deduction = int(line_edit.text())
 
@@ -20,10 +20,10 @@ class IncludeGroupBox(QGroupBox):
             check = False if state == Qt.Unchecked else True
             
         super().__init__()
-        self.max_deduction = 0;
-        self.deduction_per_elem = 0
-        self.check_superfluous = False
-        self.check_order = False
+        self.max_deduction = max_deduction;
+        self.deduction_per_elem = deduction
+        self.check_superfluous = check_superfluous
+        self.check_order = check_order
 
         point_validator = QIntValidator()
         
@@ -64,4 +64,4 @@ class IncludeGroupBox(QGroupBox):
         self.setLayout(gb_grid)
         self.setTitle('Includes')
         self.setCheckable(True)
-        self.setChecked(False)
+        self.setChecked(enabled)
