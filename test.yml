@@ -1,10 +1,23 @@
-IfAssign:
-  check: clang-diagnostic-parentheses
-  id: IfAssign
-  is_enabled: false
-  penalty: 2
-SwitchBool:
-  check: clang-diagnostic-switch-bool
-  id: SwitchBool
-  is_enabled: true
-  penalty: 2
+Correctness:
+  data_dir: ''
+  exe: ''
+  max_deduction: 0
+Documentation:
+  deduction: 0
+  enabled: false
+  max_deduction: 0
+Include:
+  check_oder: false
+  check_superfluous: false
+  deduction: 0
+  enabled: false
+  max_deduction: 0
+Standards:
+  const_name: ''
+  cs_name: ''
+  deduction: 0
+  enabled: false
+  func_name: ''
+  indent_style: ''
+  max_deduction: 0
+  var_name: ''

@@ -29,12 +29,12 @@ class CorrectUSWidget(QMainWindow):
         self.setGeometry(300,300,800,600)
         self.setWindowTitle('CorrectUS')
 
-        hw_infos_gb = GeneralInfoGroupBox()
-        correctness_gb = CorrectnessGroupBox()
-        documentation_gb = DocumentationGroupBox()
-        include_gb = IncludeGroupBox()
-        standards_gb = CodingStandardsGroupBox()
-        errors_gb = ErrorGroupBox()
+        self.hw_infos_gb = GeneralInfoGroupBox()
+        self.correctness_gb = CorrectnessGroupBox()
+        self.documentation_gb = DocumentationGroupBox()
+        self.include_gb = IncludeGroupBox()
+        self.standards_gb = CodingStandardsGroupBox()
+        self.errors_gb = ErrorGroupBox()
 
         gbtn = QPushButton('Grade', self)
         gbtn.clicked.connect(lambda: self.grade(hw_infos_gb.root_dir, hw_infos_gb.res_dir, correctness_gb.exe, correctness_gb.test_data_dir))
@@ -50,12 +50,12 @@ class CorrectUSWidget(QMainWindow):
         self.grid = QGridLayout()
         self.main_widget.setLayout(self.grid)
 
-        self.grid.addWidget(hw_infos_gb, 0, 0, 2, 6)
-        self.grid.addWidget(correctness_gb, 2, 0, 2, 6)
-        self.grid.addWidget(documentation_gb, 4, 0, 1, 3)
-        self.grid.addWidget(include_gb, 4, 3, 1, 3)
-        self.grid.addWidget(standards_gb, 5, 0, 2, 6)
-        self.grid.addWidget(errors_gb, 7, 0, 2, 6)
+        self.grid.addWidget(self.hw_infos_gb, 0, 0, 2, 6)
+        self.grid.addWidget(self.correctness_gb, 2, 0, 2, 6)
+        self.grid.addWidget(self.documentation_gb, 4, 0, 1, 3)
+        self.grid.addWidget(self.include_gb, 4, 3, 1, 3)
+        self.grid.addWidget(self.standards_gb, 5, 0, 2, 6)
+        self.grid.addWidget(self.errors_gb, 7, 0, 2, 6)
         self.grid.addWidget(gbtn, 9, 4)
         self.grid.addWidget(qbtn, 9, 5)
 
@@ -118,10 +118,26 @@ class CorrectUSWidget(QMainWindow):
         config, _ = QFileDialog.getSaveFileName(self)
         if not config:
             return
+
+        marking_scheme = {}
+        # Correctness
+        marking_scheme['Correctness'] = { 'data_dir':self.correctness_gb.test_data_dir, 'exe':self.correctness_gb.exe, 'max_deduction':self.correctness_gb.max_deduction }
+
+        # Documentation
+        marking_scheme['Documentation'] = { 'enabled':self.documentation_gb.isChecked(),'max_deduction':self.documentation_gb.max_deduction, 'deduction':self.documentation_gb.deduction_per_elem }
+
+        # Include
+        marking_scheme['Include'] = { 'enabled':self.include_gb.isChecked(),'max_deduction':self.include_gb.max_deduction, 'deduction':self.include_gb.deduction_per_elem, 'check_superfluous':self.include_gb.check_superfluous, 'check_oder':self.include_gb.check_order }
+
+        # Coding standards
+        marking_scheme['Standards'] = { 'enabled':self.standards_gb.isChecked(), 'var_name':self.standards_gb.var_name, 'const_name':self.standards_gb.const_name, 'func_name':self.standards_gb.func_name, 'cs_name':self.standards_gb.cs_name, 'indent_style':self.standards_gb.indent_style, 'max_deduction':self.standards_gb.max_deduction, 'deduction':self.standards_gb.deduction_per_elem }
+
+        # Errors
+        #for err in self.errors.values():
+        #    err_dict = { err.id: { 'id':err.id, 'check':err.check, 'is_enabled':err.is_enabled, 'penalty':err.penalty } }
+
         with open(config, 'w+') as outfile:
-            for err in self.errors.values():
-                err_dict = { err.id: { 'id':err.id, 'check':err.check, 'is_enabled':err.is_enabled, 'penalty':err.penalty } }
-                outfile.write(yaml.dump(err_dict, default_flow_style=False))
+            outfile.write(yaml.dump(marking_scheme, default_flow_style=False))
 
 
     def grade(self, hw_root_dir, res_dir, correct_exe, data_dir):
