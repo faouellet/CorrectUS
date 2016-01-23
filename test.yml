@@ -1,11 +1,14 @@
 Correctness:
-  data_dir: 'test/dir'
-  exe: 'test'
-  max_deduction: 10
+  data_dir: ''
+  exe: ''
+  max_deduction: 0
 Documentation:
   deduction: 0
   enabled: false
   max_deduction: 0
+General:
+  res_dir: ''
+  root_dir: ''
 Include:
   check_oder: false
   check_superfluous: false

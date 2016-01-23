@@ -37,7 +37,7 @@ class CorrectUSWidget(QMainWindow):
         self.errors_gb = ErrorGroupBox()
 
         gbtn = QPushButton('Grade', self)
-        gbtn.clicked.connect(lambda: self.grade(hw_infos_gb.root_dir, hw_infos_gb.res_dir, correctness_gb.exe, correctness_gb.test_data_dir))
+        gbtn.clicked.connect(lambda: self.grade(self.hw_infos_gb.root_dir, self.hw_infos_gb.res_dir, self.correctness_gb.exe, self.correctness_gb.test_data_dir))
         gbtn.resize(gbtn.sizeHint())
 
         qbtn = QPushButton('Quit', self)
@@ -106,6 +106,10 @@ class CorrectUSWidget(QMainWindow):
             return
         with open(config, 'r') as conf:
             data = yaml.safe_load(conf)
+
+        # General infos
+        self.hw_infos_gb.res_dir = data['General']['res_dir']
+        self.hw_infos_gb.root_dir = data['General']['root_dir']
         
         # Correctness
         self.correctness_gb.test_data_dir = data['Correctness']['data_dir']
@@ -149,17 +153,47 @@ class CorrectUSWidget(QMainWindow):
             return
 
         marking_scheme = {}
+
+        # General infos
+        marking_scheme['General'] = {
+                                        'root_dir':self.hw_infos_gb.root_dir,
+                                        'res_dir':self.hw_infos_gb.res_dir,
+                                    }
+
         # Correctness
-        marking_scheme['Correctness'] = { 'data_dir':self.correctness_gb.test_data_dir, 'exe':self.correctness_gb.exe, 'max_deduction':self.correctness_gb.max_deduction }
+        marking_scheme['Correctness'] = { 
+                                            'data_dir':self.correctness_gb.test_data_dir, 
+                                            'exe':self.correctness_gb.exe, 
+                                            'max_deduction':self.correctness_gb.max_deduction 
+                                        }
 
         # Documentation
-        marking_scheme['Documentation'] = { 'enabled':self.documentation_gb.isChecked(),'max_deduction':self.documentation_gb.max_deduction, 'deduction':self.documentation_gb.deduction_per_elem }
+        marking_scheme['Documentation'] = { 
+                                            'enabled':self.documentation_gb.isChecked(),
+                                            'max_deduction':self.documentation_gb.max_deduction, 
+                                            'deduction':self.documentation_gb.deduction_per_elem 
+                                          }
 
         # Include
-        marking_scheme['Include'] = { 'enabled':self.include_gb.isChecked(),'max_deduction':self.include_gb.max_deduction, 'deduction':self.include_gb.deduction_per_elem, 'check_superfluous':self.include_gb.check_superfluous, 'check_oder':self.include_gb.check_order }
+        marking_scheme['Include'] = { 
+                                        'enabled':self.include_gb.isChecked(),
+                                        'max_deduction':self.include_gb.max_deduction, 
+                                        'deduction':self.include_gb.deduction_per_elem, 
+                                        'check_superfluous':self.include_gb.check_superfluous, 
+                                        'check_oder':self.include_gb.check_order
+                                    }
 
         # Coding standards
-        marking_scheme['Standards'] = { 'enabled':self.standards_gb.isChecked(), 'var_name':self.standards_gb.var_name, 'const_name':self.standards_gb.const_name, 'func_name':self.standards_gb.func_name, 'cs_name':self.standards_gb.cs_name, 'indent_style':self.standards_gb.indent_style, 'max_deduction':self.standards_gb.max_deduction, 'deduction':self.standards_gb.deduction_per_elem }
+        marking_scheme['Standards'] = { 
+                                        'enabled':self.standards_gb.isChecked(), 
+                                        'var_name':self.standards_gb.var_name, 
+                                        'const_name':self.standards_gb.const_name, 
+                                        'func_name':self.standards_gb.func_name, 
+                                        'cs_name':self.standards_gb.cs_name, 
+                                        'indent_style':self.standards_gb.indent_style, 
+                                        'max_deduction':self.standards_gb.max_deduction, 
+                                        'deduction':self.standards_gb.deduction_per_elem 
+                                      }
 
         # Errors
         #for err in self.errors.values():
