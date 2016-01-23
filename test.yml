@@ -1,7 +1,7 @@
 Correctness:
-  data_dir: ''
-  exe: ''
-  max_deduction: 0
+  data_dir: 'test/dir'
+  exe: 'test'
+  max_deduction: 10
 Documentation:
   deduction: 0
   enabled: false

@@ -5,7 +5,7 @@ import os
 
 
 class CorrectnessGroupBox(QGroupBox):
-    def __init__(self, test_data_dir='', exe=''):
+    def __init__(self, test_data_dir='', exe='', max_deduction=0):
         def getDir(entry, dir):
             dname = QFileDialog.getExistingDirectory(self)
             if not dname:
@@ -32,7 +32,7 @@ class CorrectnessGroupBox(QGroupBox):
         super().__init__()
         self.test_data_dir = test_data_dir
         self.exe = exe
-        self.max_deduction = 0
+        self.max_deduction = max_deduction
 
         test_data_label = QLabel('Test data directory')
         test_data_edit = QLineEdit() 

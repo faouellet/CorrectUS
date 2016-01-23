@@ -106,12 +106,41 @@ class CorrectUSWidget(QMainWindow):
             return
         with open(config, 'r') as conf:
             data = yaml.safe_load(conf)
-        errs = {}
-        for d in data.values():
-            errs[d['id']] = Error(d["id"], d["check"], d["is_enabled"], d["penalty"])
+        
+        # Correctness
+        self.correctness_gb.test_data_dir = data['Correctness']['data_dir']
+        self.correctness_gb.exe = data['Correctness']['exe']
+        self.correctness_gb.max_deduction = data['Correctness']['max_deduction']
 
-        self.errors = errs
-        self.setErrors()
+        # Documentation 
+        self.documentation_gb.setChecked(bool(data['Documentation']['enabled']))
+        self.documentation_gb.deduction_per_elem = int(data['Documentation']['deduction'])
+        self.documentation_gb.max_deduction = int(data['Documentation']['max_deduction'])
+
+        # Include
+        self.include_gb.setChecked(data['Include']['enabled'])
+        self.include_gb.max_deduction = data['Include']['max_deduction']
+        self.include_gb.deduction_per_elem= data['Include']['deduction']
+        self.include_gb.check_superfluous= data['Include']['check_superfluous']
+        self.include_gb.check_order = data['Include']['check_oder']
+
+        # Coding standards
+        self.standards_gb.setChecked(data['Standards']['enabled'])
+        self.standards_gb.var_name = data['Standards']['var_name']
+        self.standards_gb.const_name = data['Standards']['const_name']
+        self.standards_gb.func_name = data['Standards']['func_name']
+        self.standards_gb.cs_name = data['Standards']['cs_name']
+        self.standards_gb.indent_style = data['Standards']['indent_style']
+        self.standards_gb.max_deduction = data['Standards']['max_deduction']
+        self.standards_gb.deduction_per_elem = data['Standards']['deduction']
+
+        # Errors
+        #errs = {}
+        #for d in data.values():
+        #    errs[d['id']] = Error(d["id"], d["check"], d["is_enabled"], d["penalty"])
+
+        #self.errors = errs
+        #self.setErrors()
 
 
     def saveConfig(self):
