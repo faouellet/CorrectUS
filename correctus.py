@@ -72,7 +72,7 @@ class CorrectUSWidget(QMainWindow):
         
         load = QAction('&Load config', self)
         load.setStatusTip('Load configuration file')
-        load.triggered.connect(self.loadConfig)
+        load.triggered.connect(lambda: self.loadConfig())
 
         save = QAction('&Save config', self)
         save.setStatusTip('Save configuration file')
@@ -108,35 +108,35 @@ class CorrectUSWidget(QMainWindow):
             data = yaml.safe_load(conf)
 
         # General infos
-        self.hw_infos_gb.res_dir = data['General']['res_dir']
-        self.hw_infos_gb.root_dir = data['General']['root_dir']
+        self.hw_infos_gb.root_edit.setText(data['General']['root_dir'])
+        self.hw_infos_gb.res_edit.setText(data['General']['res_dir'])
         
         # Correctness
-        self.correctness_gb.test_data_dir = data['Correctness']['data_dir']
-        self.correctness_gb.exe = data['Correctness']['exe']
-        self.correctness_gb.max_deduction = data['Correctness']['max_deduction']
-
+        self.correctness_gb.test_data_edit.setText(data['Correctness']['data_dir'])
+        self.correctness_gb.test_data_edit.setText(data['Correctness']['data_dir'])
+        self.correctness_gb.point_edit.setText(str(data['Correctness']['max_deduction']))
+        
         # Documentation 
-        self.documentation_gb.setChecked(bool(data['Documentation']['enabled']))
-        self.documentation_gb.deduction_per_elem = int(data['Documentation']['deduction'])
-        self.documentation_gb.max_deduction = int(data['Documentation']['max_deduction'])
+        self.documentation_gb.setChecked(data['Documentation']['enabled'] == 'true')
+        self.documentation_gb.max_point_edit.setText(str(data['Documentation']['deduction']))
+        self.documentation_gb.point_edit.setText(str(data['Documentation']['max_deduction']))
 
         # Include
-        self.include_gb.setChecked(data['Include']['enabled'])
-        self.include_gb.max_deduction = data['Include']['max_deduction']
-        self.include_gb.deduction_per_elem= data['Include']['deduction']
-        self.include_gb.check_superfluous= data['Include']['check_superfluous']
-        self.include_gb.check_order = data['Include']['check_oder']
+        self.include_gb.setChecked(data['Include']['enabled'] == 'true')
+        self.include_gb.max_point_edit.setText(str(data['Include']['max_deduction']))
+        self.include_gb.point_edit.setText(str(data['Include']['deduction']))
+        self.include_gb.min_include_chkbox.setChecked(bool(data['Include']['check_superfluous']))
+        self.include_gb.order_include_chkbox.setChecked(bool(data['Include']['check_order']))
 
         # Coding standards
-        self.standards_gb.setChecked(data['Standards']['enabled'])
-        self.standards_gb.var_name = data['Standards']['var_name']
-        self.standards_gb.const_name = data['Standards']['const_name']
-        self.standards_gb.func_name = data['Standards']['func_name']
-        self.standards_gb.cs_name = data['Standards']['cs_name']
-        self.standards_gb.indent_style = data['Standards']['indent_style']
-        self.standards_gb.max_deduction = data['Standards']['max_deduction']
-        self.standards_gb.deduction_per_elem = data['Standards']['deduction']
+        self.standards_gb.setChecked(data['Standards']['enabled'] == 'true')
+        self.standards_gb.var_choices.setCurrentIndex(data['Standards']['var_name'])
+        self.standards_gb.const_choices.setCurrentIndex(data['Standards']['const_name'])
+        self.standards_gb.func_choices.setCurrentIndex(data['Standards']['func_name'])
+        self.standards_gb.cs_choices.setCurrentIndex(data['Standards']['cs_name'])
+        self.standards_gb.indent_choices.setCurrentIndex(data['Standards']['indent_style'])
+        self.standards_gb.max_point_edit.setText(str(data['Standards']['max_deduction']))
+        self.standards_gb.point_edit.setText(str(data['Standards']['deduction']))
 
         # Errors
         #errs = {}
@@ -180,7 +180,7 @@ class CorrectUSWidget(QMainWindow):
                                         'max_deduction':self.include_gb.max_deduction, 
                                         'deduction':self.include_gb.deduction_per_elem, 
                                         'check_superfluous':self.include_gb.check_superfluous, 
-                                        'check_oder':self.include_gb.check_order
+                                        'check_order':self.include_gb.check_order
                                     }
 
         # Coding standards

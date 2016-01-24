@@ -1,16 +1,16 @@
 Correctness:
   data_dir: ''
   exe: ''
-  max_deduction: 0
+  max_deduction: 100
 Documentation:
   deduction: 0
   enabled: false
-  max_deduction: 0
+  max_deduction: 100
 General:
   res_dir: ''
   root_dir: ''
 Include:
-  check_oder: false
+  check_order: false
   check_superfluous: false
   deduction: 0
   enabled: false

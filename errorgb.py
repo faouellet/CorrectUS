@@ -18,6 +18,36 @@ class ErrorGroupBox(QGroupBox):
         table.resizeColumnsToContents()
         table.setSortingEnabled(False)
 
+        """
+        for idx, err_key in enumerate(sorted(self.errors)):
+            err = self.errors[err_key]
+            id_item = QTableWidgetItem(err.id)
+            id_item.setFlags(Qt.ItemIsEnabled)
+
+            desc_item = QTableWidgetItem(err.check)
+            desc_item.setFlags(Qt.ItemIsEnabled)
+
+            penalty_item = QTableWidgetItem(str(err.penalty))
+            penalty_item.setTextAlignment(Qt.AlignCenter)
+
+            cell_widget = QWidget()
+            chk_box = QCheckBox()
+            if err.is_enabled:
+                chk_box.setCheckState(Qt.Checked)
+            else:
+                chk_box.setCheckState(Qt.Unchecked)
+            chk_box.stateChanged.connect(lambda state, err=err: self.chkboxClicked(err, state))
+            layout = QHBoxLayout(cell_widget)
+            layout.addWidget(chk_box)
+            layout.setAlignment(Qt.AlignCenter)
+            cell_widget.setLayout(layout)
+
+            self.table.setItem(idx, 0, id_item)
+            self.table.setItem(idx, 1, desc_item)
+            self.table.setItem(idx, 2, penalty_item)
+            self.table.setCellWidget(idx, 3, cell_widget)
+            """
+
         max_point_label = QLabel('Maximum points deduction:')
         max_point_edit = QLineEdit()
         max_point_edit.setMaximumWidth(50)

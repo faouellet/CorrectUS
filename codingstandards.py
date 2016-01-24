@@ -38,49 +38,49 @@ class CodingStandardsGroupBox(QGroupBox):
         point_validator = QIntValidator()
 
         point_label = QLabel('Points deduction per error:')
-        point_edit = QLineEdit()
-        point_edit.setMaximumWidth(50)
-        point_edit.setText('0')
-        point_edit.setValidator(point_validator)
-        point_edit.editingFinished.connect(lambda: onEditPoint(self.deduction_per_elem, point_edit, self.max_deduction))
+        self.point_edit = QLineEdit()
+        self.point_edit.setMaximumWidth(50)
+        self.point_edit.setText('0')
+        self.point_edit.setValidator(point_validator)
+        self.point_edit.editingFinished.connect(lambda: onEditPoint(self.deduction_per_elem, self.point_edit, self.max_deduction))
 
         max_point_label = QLabel('Maximum points deduction:')
-        max_point_edit = QLineEdit()
-        max_point_edit.setMaximumWidth(50)
-        max_point_edit.setText('0')
-        max_point_edit.setValidator(point_validator)
-        max_point_edit.editingFinished.connect(lambda: onMaxEditPoint(self.max_deduction, max_point_edit))
+        self.max_point_edit = QLineEdit()
+        self.max_point_edit.setMaximumWidth(50)
+        self.max_point_edit.setText('0')
+        self.max_point_edit.setValidator(point_validator)
+        self.max_point_edit.editingFinished.connect(lambda: onMaxEditPoint(self.max_deduction, self.max_point_edit))
 
         naming_styles = ['CamelCase', 'camelCase', 'SNAKE_CASE']
 
-        var_label, var_choices = createLabelAndComboBox('Variable name', naming_styles, self.var_name)
-        func_label, func_choices = createLabelAndComboBox('Function name', naming_styles, self.func_name)
-        cs_label, cs_choices = createLabelAndComboBox('Class/Struct name', naming_styles, self.cs_name)
-        const_label, const_choices = createLabelAndComboBox('Constant name', naming_styles, self.const_name)
-        indent_label, indent_choices = createLabelAndComboBox('Indentation style', ['Allman', 'Egyptian'], self.indent_style)
+        var_label, self.var_choices = createLabelAndComboBox('Variable name', naming_styles, self.var_name)
+        func_label, self.func_choices = createLabelAndComboBox('Function name', naming_styles, self.func_name)
+        cs_label, self.cs_choices = createLabelAndComboBox('Class/Struct name', naming_styles, self.cs_name)
+        const_label, self.const_choices = createLabelAndComboBox('Constant name', naming_styles, self.const_name)
+        indent_label, self.indent_choices = createLabelAndComboBox('Indentation style', ['Allman', 'Egyptian'], self.indent_style)
 
         gb_grid = QGridLayout()
         gb_grid.setAlignment(Qt.AlignCenter)
 
         gb_grid.addWidget(var_label, 0, 0)
-        gb_grid.addWidget(var_choices, 0, 1)
+        gb_grid.addWidget(self.var_choices, 0, 1)
 
         gb_grid.addWidget(func_label, 0, 2)
-        gb_grid.addWidget(func_choices, 0, 3)
+        gb_grid.addWidget(self.func_choices, 0, 3)
 
         gb_grid.addWidget(const_label, 1, 0)
-        gb_grid.addWidget(const_choices, 1, 1)
+        gb_grid.addWidget(self.const_choices, 1, 1)
 
         gb_grid.addWidget(cs_label, 1, 2)
-        gb_grid.addWidget(cs_choices, 1, 3)
+        gb_grid.addWidget(self.cs_choices, 1, 3)
 
         gb_grid.addWidget(indent_label, 0, 4)
-        gb_grid.addWidget(indent_choices, 0, 5)
+        gb_grid.addWidget(self.indent_choices, 0, 5)
 
         gb_grid.addWidget(point_label, 2, 0)
-        gb_grid.addWidget(point_edit, 2, 1)
+        gb_grid.addWidget(self.point_edit, 2, 1)
         gb_grid.addWidget(max_point_label, 2, 3)
-        gb_grid.addWidget(max_point_edit, 2, 4)
+        gb_grid.addWidget(self.max_point_edit, 2, 4)
 
         self.setLayout(gb_grid)
         self.setTitle('Coding standard')
