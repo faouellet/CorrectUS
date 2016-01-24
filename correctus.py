@@ -117,24 +117,31 @@ class CorrectUSWidget(QMainWindow):
         self.correctness_gb.point_edit.setText(str(data['Correctness']['max_deduction']))
         
         # Documentation 
-        self.documentation_gb.setChecked(data['Documentation']['enabled'] == 'true')
-        self.documentation_gb.max_point_edit.setText(str(data['Documentation']['deduction']))
-        self.documentation_gb.point_edit.setText(str(data['Documentation']['max_deduction']))
+        self.documentation_gb.setChecked(bool(data['Documentation']['enabled']))
+        self.documentation_gb.max_point_edit.setText(str(data['Documentation']['max_deduction']))
+        self.documentation_gb.point_edit.setText(str(data['Documentation']['deduction']))
 
         # Include
-        self.include_gb.setChecked(data['Include']['enabled'] == 'true')
+        self.include_gb.setChecked(bool(data['Include']['enabled']))
         self.include_gb.max_point_edit.setText(str(data['Include']['max_deduction']))
         self.include_gb.point_edit.setText(str(data['Include']['deduction']))
         self.include_gb.min_include_chkbox.setChecked(bool(data['Include']['check_superfluous']))
         self.include_gb.order_include_chkbox.setChecked(bool(data['Include']['check_order']))
 
         # Coding standards
-        self.standards_gb.setChecked(data['Standards']['enabled'] == 'true')
-        self.standards_gb.var_choices.setCurrentIndex(data['Standards']['var_name'])
-        self.standards_gb.const_choices.setCurrentIndex(data['Standards']['const_name'])
-        self.standards_gb.func_choices.setCurrentIndex(data['Standards']['func_name'])
-        self.standards_gb.cs_choices.setCurrentIndex(data['Standards']['cs_name'])
-        self.standards_gb.indent_choices.setCurrentIndex(data['Standards']['indent_style'])
+        def getStyleIndex(list, val):
+            try:
+                return list.index(val)
+            except ValueError:
+                # TODO: Should we really default to 0?
+                return 0
+
+        self.standards_gb.setChecked(bool(data['Standards']['enabled']))
+        self.standards_gb.var_choices.setCurrentIndex(getStyleIndex(self.standards_gb.naming_styles, data['Standards']['var_name']))
+        self.standards_gb.const_choices.setCurrentIndex(getStyleIndex(self.standards_gb.naming_styles, data['Standards']['const_name']))
+        self.standards_gb.func_choices.setCurrentIndex(getStyleIndex(self.standards_gb.naming_styles, data['Standards']['func_name']))
+        self.standards_gb.cs_choices.setCurrentIndex(getStyleIndex(self.standards_gb.naming_styles, data['Standards']['cs_name']))
+        self.standards_gb.indent_choices.setCurrentIndex(getStyleIndex(self.standards_gb.indent_conventions, data['Standards']['indent_style']))
         self.standards_gb.max_point_edit.setText(str(data['Standards']['max_deduction']))
         self.standards_gb.point_edit.setText(str(data['Standards']['deduction']))
 
