@@ -55,9 +55,9 @@ class CorrectUSWidget(QMainWindow):
         self.grid.addWidget(self.documentation_gb, 4, 0, 1, 3)
         self.grid.addWidget(self.include_gb, 4, 3, 1, 3)
         self.grid.addWidget(self.standards_gb, 5, 0, 2, 6)
-        self.grid.addWidget(self.errors_gb, 7, 0, 2, 6)
-        self.grid.addWidget(gbtn, 9, 4)
-        self.grid.addWidget(qbtn, 9, 5)
+        self.grid.addWidget(self.errors_gb, 7, 0, 4, 6)
+        self.grid.addWidget(gbtn, 11, 4)
+        self.grid.addWidget(qbtn, 11, 5)
 
 
     def initMenus(self):
@@ -71,10 +71,12 @@ class CorrectUSWidget(QMainWindow):
         quit.triggered.connect(QCoreApplication.instance().quit)
         
         load = QAction('&Load config', self)
+        load.setShortcut('Ctrl+O')
         load.setStatusTip('Load configuration file')
         load.triggered.connect(lambda: self.loadConfig())
 
         save = QAction('&Save config', self)
+        save.setShortcut('Ctrl+S')
         save.setStatusTip('Save configuration file')
         save.triggered.connect(self.saveConfig)
 
@@ -146,12 +148,14 @@ class CorrectUSWidget(QMainWindow):
         self.standards_gb.point_edit.setText(str(data['Standards']['deduction']))
 
         # Errors
-        #errs = {}
-        #for d in data.values():
-        #    errs[d['id']] = Error(d["id"], d["check"], d["is_enabled"], d["penalty"])
+        self.errors_gb.setChecked(bool(data['Errors']['enabled']))
+        self.errors_gb.max_point_edit.setText(str(data['Errors']['max_deduction']))
 
-        #self.errors = errs
-        #self.setErrors()
+        errs = {}
+        for d in data['Errors']['errs'].values():
+            errs[d['id']] = Error(d["id"], d["check"], d["is_enabled"], d["penalty"])
+
+        self.errors_gb.setErrors(errs)
 
 
     def saveConfig(self):
@@ -203,8 +207,15 @@ class CorrectUSWidget(QMainWindow):
                                       }
 
         # Errors
-        #for err in self.errors.values():
-        #    err_dict = { err.id: { 'id':err.id, 'check':err.check, 'is_enabled':err.is_enabled, 'penalty':err.penalty } }
+        err_dict = {}
+        for err in self.errors_gb.errors.values():
+            err_dict[err.id] = { 'id':err.id, 'check':err.check, 'is_enabled':err.is_enabled, 'penalty':err.penalty }
+
+        marking_scheme['Errors'] = {
+                                        'enabled':self.errors_gb.isChecked(),
+                                        'max_deduction':self.errors_gb.max_deduction,
+                                        'errs':err_dict,
+                                   }
 
         with open(config, 'w+') as outfile:
             outfile.write(yaml.dump(marking_scheme, default_flow_style=False))

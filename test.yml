@@ -1,11 +1,25 @@
 Correctness:
   data_dir: ''
   exe: ''
-  max_deduction: 100
+  max_deduction: 0
 Documentation:
   deduction: 0
   enabled: false
-  max_deduction: 100
+  max_deduction: 0
+Errors:
+  enabled: true
+  errs:
+    IfAssign:
+      check: clang-diagnostic-parentheses
+      id: IfAssign
+      is_enabled: false
+      penalty: 2
+    SwitchBool:
+      check: clang-diagnostic-switch-bool
+      id: SwitchBool
+      is_enabled: true
+      penalty: 4
+  max_deduction: 0
 General:
   res_dir: ''
   root_dir: ''
@@ -16,11 +30,11 @@ Include:
   enabled: false
   max_deduction: 0
 Standards:
-  const_name: ''
-  cs_name: ''
+  const_name: CamelCase
+  cs_name: CamelCase
   deduction: 0
   enabled: false
-  func_name: ''
-  indent_style: ''
+  func_name: CamelCase
+  indent_style: Allman
   max_deduction: 0
-  var_name: ''
+  var_name: CamelCase
