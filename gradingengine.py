@@ -27,8 +27,10 @@ class GradingEngine:
             results.append(output.decode('utf-8'))
 
 
-    def grade_all(self, hw_root_dir, res_dir, correct_exe, data_dir):
+    def grade_all(self, hw_root_dir, res_dir):
         # Prepare expected results
+        correct_exe = self.marking_scheme['Correctness']['exe']
+        data_dir = self.marking_scheme['Correctness']['data_dir']
         expected_results = self.execute_program(correct_exe, data_dir)
 
         # Grade all student directories
@@ -49,7 +51,7 @@ class GradingEngine:
                 sources.append(os.path.join(dirpath, filename))
 
         # Grade student
-        student_res = self.grade_correctness(sources, data_dir, expected_results)
+        deduction, student_res = self.grade_correctness(sources, data_dir, expected_results)
         student_res = student_res + self.grade_includes(sources)
         student_res = student_res + self.grade_coding_standards(sources)
         student_res = student_res + self.grade_error_and_doc(sources)
@@ -62,14 +64,16 @@ class GradingEngine:
 
         # Check that an executable was actually produced
         student_exe = os.path.join(os.curdir, 'a.out')
+        max_deduction = self.marking_scheme['Correctness']['max_deduction']
         if not os.isfile(student_exe):
-            return "Couldn't compile the homework sources"
+            return max_deduction, "Couldn't compile the homework sources"
 
         student_results = self.execute_program(student_exe, data_dir)
         errors = []
+        deduction = max_deduction / len(student_results)
         for student_res, expected_res in zip(student_results, expected_results):
             if not student_res == expected_res:
-                errors.append('Incorrect output')
+                errors.append([deduction, 'Incorrect output'])
     
         return errors
 
