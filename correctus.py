@@ -163,8 +163,12 @@ class CorrectUSWidget(QMainWindow):
         if not config:
             return
 
-        marking_scheme = {}
+        marking_scheme = self.getMarkingScheme()
+        with open(config, 'w+') as outfile:
+            outfile.write(yaml.dump(marking_scheme, default_flow_style=False))
 
+
+    def getMarkingScheme(self):
         # General infos
         marking_scheme['General'] = {
                                         'root_dir':self.hw_infos_gb.root_dir,
@@ -217,12 +221,12 @@ class CorrectUSWidget(QMainWindow):
                                         'errs':err_dict,
                                    }
 
-        with open(config, 'w+') as outfile:
-            outfile.write(yaml.dump(marking_scheme, default_flow_style=False))
+        return marking_scheme
+
 
 
     def grade(self, hw_root_dir, res_dir, correct_exe, data_dir):
-        #self.ge.set_marking_scheme()
+        self.ge.set_marking_scheme(self.getMarkingScheme())
         self.ge.grade_all(hw_root_dir, res_dir, correct_exe, data_dir)
         done = QMessageBox(QMessageBox.Information, 'Done','Grading complete', QMessageBox.Ok, self)
         done.show()
