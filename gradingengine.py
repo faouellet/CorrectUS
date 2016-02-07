@@ -13,12 +13,10 @@ class GradingEngine:
 
 
     def set_marking_scheme(self, marking_scheme):
-        for err in marking_scheme.values():
-            if err.is_enabled:
-                self.marking_scheme[err.check] = err.penalty
+        self.marking_scheme = marking_scheme
 
 
-    def execute_program(exe, data_dir):
+    def execute_program(self, exe, data_dir):
         results = []
         for dirpath, _, filename in os.walk(data_dir):
             p = subprocess.Popen([exe, os.path.join(dirpath, filename)],
@@ -27,23 +25,30 @@ class GradingEngine:
             results.append(output.decode('utf-8'))
 
 
-    def grade_all(self, hw_root_dir, res_dir):
+    def grade_all(self):
         # Prepare expected results
         correct_exe = self.marking_scheme['Correctness']['exe']
         data_dir = self.marking_scheme['Correctness']['data_dir']
         expected_results = self.execute_program(correct_exe, data_dir)
 
+        # Get the point total
+        self.total = self.marking_scheme['Correctness']['max_deduction'] + \
+                     self.marking_scheme['Documentation']['max_deduction'] + \
+                     self.marking_scheme['Include']['max_deduction'] + \
+                     self.marking_scheme['Standards']['max_deduction'] + \
+                     self.marking_scheme['Errors']['max_deduction']                                        
+
         # Grade all student directories
+        hw_root_dir = self.marking_scheme['General']['root_dir']
+        res_dir = self.marking_scheme['General']['res_dir']
         if os.path.isdir(hw_root_dir):
             for student_dir in os.listdir(hw_root_dir):
                 complete_student_dir = os.path.join(hw_root_dir, student_dir)
                 if os.path.isdir(complete_student_dir):
-                    student_result = self.grade_student(complete_student_dir, data_dir, expected_results)
-                    with open('%s/%s.txt' % (res_dir, student_dir), 'w+') as student_res_file:
-                        student_res_file.write(student_result)
+                    self.grade_student(complete_student_dir, res_dir, data_dir, expected_results)
+                    
 
-
-    def grade_student(self, student_dir, data_dir, expected_results):
+    def grade_student(self, student_dir, res_dir, data_dir, expected_results):
         # Get the student sources
         sources = []
         for dirpath, _, filename in os.walk(student_dir):
@@ -51,11 +56,25 @@ class GradingEngine:
                 sources.append(os.path.join(dirpath, filename))
 
         # Grade student
-        deduction, student_res = self.grade_correctness(sources, data_dir, expected_results)
-        student_res = student_res + self.grade_includes(sources)
-        student_res = student_res + self.grade_coding_standards(sources)
-        student_res = student_res + self.grade_error_and_doc(sources)
-        return student_res
+        total_deduction = 0
+        with open('%s/%s.txt' % (res_dir, student_dir), 'w+') as student_res_file:
+            deduction, student_res = self.grade_correctness(sources, data_dir, expected_results)
+            student_res_file.write(student_result)
+            total_deduction += deduction
+
+            deduction, student_res = self.grade_includes(sources, data_dir, expected_results)
+            student_res_file.write(student_result)
+            total_deduction += deduction
+
+            deduction, student_res = self.grade_coding_standards(sources, data_dir, expected_results)
+            student_res_file.write(student_result)
+            total_deduction += deduction
+
+            deduction, student_res = self.grade_error_and_doc(sources, data_dir, expected_results)
+            student_res_file.write(student_result)
+            total_deduction += deduction
+
+            student_res_file.write("Final mark: %i" % (self.total - total_deduction))
 
 
     def grade_correctness(self, sources, data_dir, expected_results):

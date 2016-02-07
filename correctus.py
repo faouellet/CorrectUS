@@ -169,6 +169,8 @@ class CorrectUSWidget(QMainWindow):
 
 
     def getMarkingScheme(self):
+        marking_scheme = {}
+
         # General infos
         marking_scheme['General'] = {
                                         'root_dir':self.hw_infos_gb.root_dir,
@@ -227,7 +229,7 @@ class CorrectUSWidget(QMainWindow):
 
     def grade(self, hw_root_dir, res_dir, correct_exe, data_dir):
         self.ge.set_marking_scheme(self.getMarkingScheme())
-        self.ge.grade_all(hw_root_dir, res_dir, correct_exe, data_dir)
+        self.ge.grade_all()
         done = QMessageBox(QMessageBox.Information, 'Done','Grading complete', QMessageBox.Ok, self)
         done.show()
 
