@@ -8,8 +8,8 @@ class Error:
 def get_description(err_id):
     if not hasattr(get_description, "id_to_desc"):
         get_description.id_to_desc = {
-                'IfAssign' : '',
-                'SwitchBool' : ''
+                'IfAssign' : 'Using the result of an assignment as a condition without parentheses',
+                'SwitchBool' : 'Switch condition has boolean value'
                 }
 
     return get_description.id_to_desc[err_id]
@@ -22,8 +22,8 @@ def get_default_errors():
                 }
 
         get_default_errors.errors = {
-                'IfAssign' : Error('IfAssign', id_to_clang_check['IfAssign'], True, 2),
-                'SwitchBool' : Error('SwitchBool', id_to_clang_check['SwitchBool'], True, 2)
+                'IfAssign' : Error('IfAssign', get_description('IfAssign'), True, 2),
+                'SwitchBool' : Error('SwitchBool', get_description('SwitchBool'), True, 2)
                 }
 
     return get_default_errors.errors
