@@ -1,9 +1,9 @@
 Mistake:switch condition has boolean value 
-File: C:\Users\Felix\Desktop\Mes Dossiers\Informatique\Projets\CorrectUS\inputs\test\fao1\test1.cpp, Line: 4, Column: 5
+File: C:\CorrectUS\inputs\test\fao1\test1.cpp, Line: 4, Column: 5
 Penalty: 2
 
 Mistake:using the result of an assignment as a condition without parentheses 
-File: C:\Users\Felix\Desktop\Mes Dossiers\Informatique\Projets\CorrectUS\inputs\test\fao2\test2.cpp, Line: 5, Column: 10
+File: C:\CorrectUS\inputs\test\fao2\test2.cpp, Line: 5, Column: 10
 Penalty: 2
 
 Total penalty: 4
